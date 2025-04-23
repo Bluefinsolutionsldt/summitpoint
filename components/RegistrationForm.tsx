@@ -299,13 +299,19 @@ export function RegistrationForm() {
                         </FormControl>
                         <SelectContent className="max-h-56 rounded-md">
                           <SelectItem value="telecom">Telecom</SelectItem>
-                          <SelectItem value="banking">Banking</SelectItem>
+                          <SelectItem value="banking">
+                            Banking & Financial services
+                          </SelectItem>
+
                           <SelectItem value="incubator">Incubator</SelectItem>
                           <SelectItem value="insurance">Insurance</SelectItem>
                           <SelectItem value="health">Health</SelectItem>
                           <SelectItem value="agriculture">
                             Agriculture
                           </SelectItem>
+                          <SelectItem value="academia">Academia</SelectItem>
+                          <SelectItem value="cso">CSO/NGO</SelectItem>
+                          <SelectItem value="government">Government</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage className="text-xs" />

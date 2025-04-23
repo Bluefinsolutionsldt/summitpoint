@@ -1,9 +1,9 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import SplashScreen from "@/components/SplashScreen";
 
 export default function Home() {
-  return (
-    <div>
-      <h1 className="text-3xl font-bold underline">Hello World</h1>
-    </div>
-  );
+  return <SplashScreen />;
 }
