@@ -37,6 +37,14 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<FilterOption>("upcoming");
 
+  // Get time-based greeting
+  const getTimeBasedGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  };
+
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -103,13 +111,19 @@ export default function Dashboard() {
 
   // Protected content (only shown if authenticated)
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          {user && (
-            <p className="text-gray-600 mt-1">Welcome back, {user.name}</p>
-          )}
+    <div className="container mx-auto px-4 py-0">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 p-6 rounded-xl shadow-sm">
+        <div className="flex items-center gap-4">
+          <div>
+            {user && (
+              <p className="text-black dark:text-gray-400 mt-1 font-medium text-lg sm:text-[3rem] gap-4 flex flex-col">
+                {getTimeBasedGreeting()},{" "}
+                <span className="text-blue-600 text-lg sm:text-xl  dark:text-blue-400">
+                  {user.name}
+                </span>
+              </p>
+            )}
+          </div>
         </div>
       </div>
 

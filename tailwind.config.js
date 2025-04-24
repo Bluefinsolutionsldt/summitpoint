@@ -59,7 +59,29 @@ module.exports = {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
   			}
-  		}
+  		},
+      keyframes: {
+        'ripple-1': {
+          '0%': { transform: 'scale(0.7)', opacity: 0.7 },
+          '50%': { opacity: 0.5 },
+          '100%': { transform: 'scale(2.5)', opacity: 0 }
+        },
+        'ripple-2': {
+          '0%': { transform: 'scale(0.7)', opacity: 0.6 },
+          '50%': { opacity: 0.4 },
+          '100%': { transform: 'scale(3)', opacity: 0 }
+        },
+        'ripple-3': {
+          '0%': { transform: 'scale(0.7)', opacity: 0.5 },
+          '50%': { opacity: 0.3 },
+          '100%': { transform: 'scale(3.5)', opacity: 0 }
+        }
+      },
+      animation: {
+        'ripple-1': 'ripple-1 2s ease-out infinite',
+        'ripple-2': 'ripple-2 2.5s ease-out infinite 0.5s',
+        'ripple-3': 'ripple-3 3s ease-out infinite 1s'
+      }
   	}
   },
   plugins: [require("tailwindcss-animate")],
