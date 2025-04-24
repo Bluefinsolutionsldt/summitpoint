@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function SplashScreen() {
   const [isVisible, setIsVisible] = useState(true);
@@ -41,39 +42,13 @@ export default function SplashScreen() {
             className="relative w-24 h-24 transition-transform duration-700 ease-out transform"
             style={{ transform: `scale(${logoScale})` }}
           >
-            <div className="absolute inset-0 flex justify-center items-center">
-              <svg
-                width="96"
-                height="96"
-                viewBox="0 0 96 96"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="drop-shadow-md"
-              >
-                <path
-                  d="M48 12L84 30V66L48 84L12 66V30L48 12Z"
-                  fill="#4F6EF7"
-                  stroke="#4F6EF7"
-                  strokeWidth="4"
-                  className="transition-all duration-700"
-                />
-                <path
-                  d="M48 20L72 32V56L48 68L24 56V32L48 20Z"
-                  fill="#3755F0"
-                />
-                <text
-                  x="48"
-                  y="52"
-                  fontFamily="Arial"
-                  fontSize="32"
-                  fontWeight="bold"
-                  fill="white"
-                  textAnchor="middle"
-                >
-                  S
-                </text>
-              </svg>
-            </div>
+            <Image
+              src="/logo/blue-logo.png"
+              alt="Summit Point Logo"
+              width={96}
+              height={96}
+              className="drop-shadow-md"
+            />
           </div>
         </div>
         <div

@@ -3,7 +3,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { CheckCircle2, User, AtSign, Building, ArrowRight } from "lucide-react";
+import {
+  CheckCircle2,
+  User,
+  AtSign,
+  Building,
+  ArrowRight,
+  Loader2,
+} from "lucide-react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +33,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 
 // Define the form schema
 const formSchema = z.object({
@@ -47,7 +56,17 @@ const formSchema = z.object({
     message: "Organization must be at least 2 characters.",
   }),
   industry: z.enum(
-    ["telecom", "banking", "incubator", "insurance", "health", "agriculture"],
+    [
+      "telecom",
+      "banking",
+      "incubator",
+      "insurance",
+      "health",
+      "agriculture",
+      "academia",
+      "cso",
+      "government",
+    ],
     {
       required_error: "Please select your industry.",
     }
@@ -62,6 +81,10 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export function RegistrationForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const { toast } = useToast();
+
   // Initialize the form with proper type
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -76,10 +99,105 @@ export function RegistrationForm() {
   });
 
   // Handle form submission
-  const onSubmit = (data: FormValues) => {
-    console.log(data);
-    // You would typically submit to an API here
-    alert("Registration submitted successfully!");
+  const onSubmit = async (data: FormValues) => {
+    setIsSubmitting(true);
+    setSubmitSuccess(false);
+
+    try {
+      // Map form values to API request format
+      const apiData = {
+        name: data.fullName,
+        email: data.email,
+        phone: data.phone,
+        role: "PARTICIPANT FROM PORTAL",
+        organization: data.organization,
+        eventId: 176, // Use the correct event ID
+        customFields: {
+          Gender: data.gender === "male" ? "Male" : "Female",
+          Age: mapAgeToApiFormat(data.age),
+          Industry: mapIndustryToApiFormat(data.industry),
+        },
+      };
+
+      // API call using fetch to our local API endpoint
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(apiData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to register");
+      }
+
+      setSubmitSuccess(true);
+      toast({
+        title: "Registration Successful",
+        description: "You have been registered for the event successfully!",
+        variant: "default",
+      });
+
+      form.reset();
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast({
+        title: "Registration Failed",
+        description:
+          error instanceof Error
+            ? error.message
+            : "An error occurred during registration. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Helper functions to map form values to API format
+  const mapAgeToApiFormat = (age: string): string => {
+    switch (age) {
+      case "below18":
+        return "Below 18";
+      case "18-35":
+        return "18-35";
+      case "35-45":
+        return "35-45";
+      case "46-60":
+        return "46-60";
+      case "above60":
+        return "Above 60";
+      default:
+        return "18-35";
+    }
+  };
+
+  const mapIndustryToApiFormat = (industry: string): string => {
+    switch (industry) {
+      case "telecom":
+        return "Telecom";
+      case "banking":
+        return "Banking";
+      case "incubator":
+        return "Incubator";
+      case "insurance":
+        return "Insurance";
+      case "health":
+        return "Health";
+      case "agriculture":
+        return "Agriculture";
+      case "academia":
+        return "Academia";
+      case "cso":
+        return "CSO/NGO";
+      case "government":
+        return "Government";
+      default:
+        return industry.charAt(0).toUpperCase() + industry.slice(1);
+    }
   };
 
   return (
@@ -89,7 +207,17 @@ export function RegistrationForm() {
           REGISTRATION FORM
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-5 sm:p-6">
+      <CardContent className="p-5 sm:p-6 relative">
+        {isSubmitting && (
+          <div className="absolute inset-0 bg-white/80 z-10 flex items-center justify-center">
+            <div className="text-center">
+              <Loader2 className="w-12 h-12 animate-spin mx-auto mb-3 text-blue-600" />
+              <p className="text-gray-700 font-medium">
+                Submitting your registration...
+              </p>
+            </div>
+          </div>
+        )}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {/* Personal Information Section */}
@@ -380,13 +508,35 @@ export function RegistrationForm() {
               </div>
             </div>
 
-            <Button
-              type="submit"
-              className="w-full h-11 mt-4 text-base font-semibold bg-blue-600 hover:bg-blue-700 transition-colors rounded-lg flex items-center justify-center gap-2"
-            >
-              Complete Registration
-              <ArrowRight className="w-4 h-4" />
-            </Button>
+            {/* Form Actions */}
+            <div className="mt-6">
+              <Button
+                type="submit"
+                className={`w-full h-11 mt-4 text-base font-semibold transition-colors rounded-lg flex items-center justify-center gap-2 ${
+                  submitSuccess
+                    ? "bg-green-600 hover:bg-green-700"
+                    : "bg-blue-600 hover:bg-blue-700"
+                }`}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Processing...
+                  </>
+                ) : submitSuccess ? (
+                  <>
+                    Registration Complete
+                    <CheckCircle2 className="w-4 h-4 ml-2" />
+                  </>
+                ) : (
+                  <>
+                    Complete Registration
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </Button>
+            </div>
           </form>
         </Form>
       </CardContent>

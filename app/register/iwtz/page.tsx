@@ -1,10 +1,8 @@
-import { RegistrationForm } from "@/components/RegistrationForm";
-import Image from "next/image";
+"use client";
 
-export const metadata = {
-  title: "Register for Innovation Week Tanzania 2025",
-  description: "Registration form for Innovation Week Tanzania 2025",
-};
+import { RegistrationForm } from "@/components/RegistrationForm";
+import { Toaster } from "@/components/ui/toaster";
+import Image from "next/image";
 
 export default function RegistrationPage() {
   return (
@@ -163,6 +161,8 @@ export default function RegistrationPage() {
           </div>
         </div>
       </div>
+
+      <Toaster />
     </main>
   );
 }
