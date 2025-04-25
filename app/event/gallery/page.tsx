@@ -64,7 +64,7 @@ const galleryImages = [
   },
   {
     id: 9,
-    src: "/venue.jpg",
+    src: "/Julius-Nyerere-International-Convention-Centre.webp",
     alt: "Event venue",
     caption: "JNICC Conference Hall",
     category: "venue",
