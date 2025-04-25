@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import { Check, Loader2 } from "lucide-react";
+import {
+  Check,
+  Loader2,
+  Calendar,
+  MapPin,
+  User,
+  Clock,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 
 interface TimetableItem {
   id: string;
@@ -24,6 +33,45 @@ interface TimetableProps {
   showDownloadLink?: boolean;
 }
 
+// Day color themes as specified
+const dayColorThemes = {
+  Monday: {
+    main: "#F3AA4E",
+    lighter: "#F7C280",
+    lightest: "#FFF6EB",
+    darker: "#D18425",
+    text: "#A05E0A",
+  },
+  Tuesday: {
+    main: "#98B7FF",
+    lighter: "#B7CDFF",
+    lightest: "#F3F7FF",
+    darker: "#6C95F2",
+    text: "#3760B9",
+  },
+  Wednesday: {
+    main: "#C7F1EC",
+    lighter: "#DDF7F4",
+    lightest: "#F0FDFA",
+    darker: "#92D5CD",
+    text: "#2A847A",
+  },
+  Thursday: {
+    main: "#D8BAFF",
+    lighter: "#E5D4FF",
+    lightest: "#F8F4FF",
+    darker: "#B58CEF",
+    text: "#6B3BB5",
+  },
+  Friday: {
+    main: "#FF93A8",
+    lighter: "#FFBAC7",
+    lightest: "#FFF2F6",
+    darker: "#E86A84",
+    text: "#C1324E",
+  },
+};
+
 const SimpleTimetable: React.FC<TimetableProps> = ({
   programmeUrl = "/events/FRS_Programme 25.03.25.pdf",
   items,
@@ -32,6 +80,8 @@ const SimpleTimetable: React.FC<TimetableProps> = ({
   const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [activeDay, setActiveDay] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   // Group timetable items by day
   const groupedByDay = items.reduce((groups: TimetableDayGroup[], item) => {
@@ -57,6 +107,14 @@ const SimpleTimetable: React.FC<TimetableProps> = ({
       prev.includes(id)
         ? prev.filter((sessionId) => sessionId !== id)
         : [...prev, id]
+    );
+  };
+
+  // Get color theme for a specific day
+  const getColorTheme = (day: string) => {
+    return (
+      dayColorThemes[day as keyof typeof dayColorThemes] ||
+      dayColorThemes.Monday
     );
   };
 
@@ -131,86 +189,234 @@ const SimpleTimetable: React.FC<TimetableProps> = ({
     }, 1000);
   };
 
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-2">Event Timetable</h2>
-      <p className="text-sm text-gray-600 mb-6">
-        Select the sessions you wish to attend and submit your selections.
-      </p>
+    <div className="bg-white rounded-xl shadow-lg p-6 lg:p-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8">
+        <div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">
+            Event Timetable
+          </h2>
+          <p className="text-sm text-gray-600">
+            Select the sessions you wish to attend.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3 mt-4 sm:mt-0">
+          <button
+            onClick={toggleExpand}
+            className="flex items-center text-sm text-gray-700 hover:text-gray-900"
+          >
+            {isExpanded ? (
+              <>
+                <ChevronUp className="w-4 h-4 mr-1" /> Collapse
+              </>
+            ) : (
+              <>
+                <ChevronDown className="w-4 h-4 mr-1" /> Expand All
+              </>
+            )}
+          </button>
+
+          {showDownloadLink && (
+            <Link
+              href={programmeUrl}
+              target="_blank"
+              className="px-4 py-2 text-white rounded-lg text-sm hover:opacity-90 transition-colors flex items-center"
+              style={{ backgroundColor: dayColorThemes.Monday.main }}
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              Download PDF
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {/* Day navigation tabs */}
+      <div className="mb-6 overflow-x-auto pb-2">
+        <div className="flex space-x-2">
+          <button
+            onClick={() => setActiveDay(null)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center whitespace-nowrap ${
+              activeDay === null
+                ? "text-white bg-gray-700"
+                : "bg-gray-100 text-gray-600"
+            }`}
+          >
+            <span>All Days</span>
+          </button>
+
+          {groupedByDay.map((dayGroup) => {
+            const colorTheme = getColorTheme(dayGroup.day);
+            const isActive = activeDay === dayGroup.day;
+
+            return (
+              <button
+                key={dayGroup.day}
+                onClick={() => setActiveDay(dayGroup.day)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center whitespace-nowrap ${
+                  isActive ? "text-white" : ""
+                }`}
+                style={{
+                  backgroundColor: isActive
+                    ? colorTheme.main
+                    : colorTheme.lightest,
+                  color: isActive ? "white" : colorTheme.text,
+                  boxShadow: isActive
+                    ? `0 2px 8px ${colorTheme.main}40`
+                    : "none",
+                }}
+              >
+                <span>{dayGroup.day}</span>
+                <span className="text-xs ml-2 opacity-80">
+                  {dayGroup.date.split(",")[0]}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       <div className="overflow-x-auto">
         <table className="min-w-full border-collapse">
           <thead>
-            <tr className="bg-blue-50">
-              <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">
+            <tr>
+              <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 border-b border-gray-200">
                 Attend
               </th>
-              <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">
+              <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 border-b border-gray-200">
+                Day
+              </th>
+              <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 border-b border-gray-200">
                 Time
               </th>
-              <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">
+              <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 border-b border-gray-200">
                 Session
               </th>
-              <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">
+              <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 border-b border-gray-200">
                 Speaker
               </th>
-              <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b border-gray-200">
+              <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 border-b border-gray-200">
                 Location
               </th>
             </tr>
           </thead>
           <tbody>
-            {groupedByDay.map((dayGroup, groupIndex) => (
-              <React.Fragment key={`day-${groupIndex}`}>
-                <tr>
-                  <td
-                    colSpan={5}
-                    className="py-3 px-4 font-semibold text-blue-700 bg-blue-50"
-                  >
-                    {dayGroup.day}, {dayGroup.date}
-                  </td>
-                </tr>
-                {dayGroup.items.map((item, itemIndex) => (
-                  <tr
-                    key={item.id || `item-${groupIndex}-${itemIndex}`}
-                    className={
-                      selectedSessions.includes(item.id) ? "bg-blue-50" : ""
-                    }
-                  >
-                    <td className="py-3 px-4 border-b border-gray-100 text-sm">
-                      <div className="flex justify-center">
-                        <input
-                          type="checkbox"
-                          id={`session-${item.id}`}
-                          checked={selectedSessions.includes(item.id)}
-                          onChange={() => toggleSessionSelection(item.id)}
-                          className="h-4 w-4 rounded-sm text-blue-600 focus:ring-blue-500 cursor-pointer"
-                        />
-                      </div>
-                    </td>
-                    <td className="py-3 px-4 border-b border-gray-100 text-sm">
-                      {item.time}
-                    </td>
-                    <td className="py-3 px-4 border-b border-gray-100 text-sm font-medium">
-                      {item.session}
-                    </td>
-                    <td className="py-3 px-4 border-b border-gray-100 text-sm">
-                      {item.speaker || "-"}
-                    </td>
-                    <td className="py-3 px-4 border-b border-gray-100 text-sm">
-                      {item.location || "-"}
-                    </td>
-                  </tr>
-                ))}
-              </React.Fragment>
-            ))}
+            {isExpanded &&
+              groupedByDay
+                .filter((dayGroup) => !activeDay || dayGroup.day === activeDay)
+                .map((dayGroup, groupIndex) => {
+                  const colorTheme = getColorTheme(dayGroup.day);
+                  return (
+                    <React.Fragment key={`day-${groupIndex}`}>
+                      {/* Day header row */}
+                      <tr>
+                        <td
+                          colSpan={6}
+                          className="py-3 px-4 font-semibold text-sm"
+                          style={{
+                            backgroundColor: colorTheme.lightest,
+                            color: colorTheme.text,
+                            borderBottom: `1px solid ${colorTheme.lighter}`,
+                          }}
+                        >
+                          {dayGroup.day}, {dayGroup.date}
+                        </td>
+                      </tr>
+
+                      {dayGroup.items.map((item, itemIndex) => {
+                        const isSelected = selectedSessions.includes(item.id);
+                        return (
+                          <tr
+                            key={item.id || `item-${groupIndex}-${itemIndex}`}
+                            className={`transition-colors hover:bg-gray-50 ${
+                              isSelected ? "bg-opacity-70" : ""
+                            }`}
+                            style={{
+                              backgroundColor: isSelected
+                                ? colorTheme.lightest
+                                : "",
+                            }}
+                          >
+                            <td className="py-4 px-4 border-b border-gray-100">
+                              <div className="flex justify-center">
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    id={`session-${item.id}`}
+                                    checked={isSelected}
+                                    onChange={() =>
+                                      toggleSessionSelection(item.id)
+                                    }
+                                    className="sr-only peer"
+                                  />
+                                  <div
+                                    className="w-5 h-5 border rounded-md peer-checked:flex peer-checked:items-center peer-checked:justify-center peer-checked:text-white transition-colors"
+                                    style={{
+                                      borderColor: colorTheme.lighter,
+                                      backgroundColor: isSelected
+                                        ? colorTheme.main
+                                        : "transparent",
+                                    }}
+                                  >
+                                    {isSelected && (
+                                      <Check className="w-3 h-3" />
+                                    )}
+                                  </div>
+                                </label>
+                              </div>
+                            </td>
+                            <td
+                              className="py-4 px-4 border-b border-gray-100 text-sm font-medium"
+                              style={{ color: colorTheme.text }}
+                            >
+                              {item.day}
+                            </td>
+                            <td className="py-4 px-4 border-b border-gray-100 text-sm text-gray-700">
+                              <div className="flex items-center">
+                                <Clock className="w-4 h-4 mr-2 text-gray-400" />
+                                {item.time}
+                              </div>
+                            </td>
+                            <td className="py-4 px-4 border-b border-gray-100">
+                              <div
+                                className="font-medium text-sm"
+                                style={{
+                                  color: isSelected ? colorTheme.text : "#333",
+                                }}
+                              >
+                                {item.session}
+                              </div>
+                            </td>
+                            <td className="py-4 px-4 border-b border-gray-100 text-sm text-gray-600">
+                              <div className="flex items-center">
+                                <User className="w-4 h-4 mr-2 text-gray-400" />
+                                {item.speaker || "-"}
+                              </div>
+                            </td>
+                            <td className="py-4 px-4 border-b border-gray-100 text-sm text-gray-600">
+                              <div className="flex items-center">
+                                <MapPin className="w-4 h-4 mr-2 text-gray-400" />
+                                {item.location || "-"}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </React.Fragment>
+                  );
+                })}
           </tbody>
         </table>
       </div>
 
       {/* Session Selection Summary */}
-      <div className="mt-6 mb-4">
-        <h3 className="text-sm font-semibold text-gray-700 mb-2">
+      <div className="mt-8 pt-6 border-t border-gray-100">
+        <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+          <Calendar className="w-4 h-4 mr-2 text-gray-500" />
           {selectedSessions.length} session
           {selectedSessions.length !== 1 ? "s" : ""} selected
         </h3>
@@ -219,36 +425,51 @@ const SimpleTimetable: React.FC<TimetableProps> = ({
           {selectedSessions.length > 0 ? (
             items
               .filter((item) => selectedSessions.includes(item.id))
-              .map((item) => (
-                <div
-                  key={item.id}
-                  className="inline-flex items-center bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full"
-                >
-                  <span>
-                    {item.session.length > 25
-                      ? `${item.session.substring(0, 25)}...`
-                      : item.session}
-                  </span>
-                  <button
-                    onClick={() => toggleSessionSelection(item.id)}
-                    className="ml-1 text-blue-600 hover:text-blue-800"
+              .map((item) => {
+                const colorTheme = getColorTheme(item.day);
+                return (
+                  <div
+                    key={item.id}
+                    className="inline-flex items-center text-xs px-3 py-1.5 rounded-full shadow-sm"
+                    style={{
+                      backgroundColor: `${colorTheme.lighter}`,
+                      color: colorTheme.text,
+                    }}
                   >
-                    &times;
-                  </button>
-                </div>
-              ))
+                    <span className="font-medium mr-1">
+                      {item.day.substring(0, 3)}:
+                    </span>
+                    <span>
+                      {item.session.length > 25
+                        ? `${item.session.substring(0, 25)}...`
+                        : item.session}
+                    </span>
+                    <button
+                      onClick={() => toggleSessionSelection(item.id)}
+                      className="ml-2 h-4 w-4 rounded-full flex items-center justify-center hover:opacity-80"
+                      style={{ background: colorTheme.text, color: "white" }}
+                    >
+                      &times;
+                    </button>
+                  </div>
+                );
+              })
           ) : (
             <p className="text-sm text-gray-500">No sessions selected yet.</p>
           )}
         </div>
       </div>
 
-      {/* Submit button */}
-      <div className="mt-4 flex flex-col gap-4">
+      {/* Submit button and feedback */}
+      <div className="mt-6 flex flex-col gap-4">
         <button
           onClick={handleSubmit}
           disabled={isSubmitting || selectedSessions.length === 0}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors disabled:bg-blue-300 disabled:cursor-not-allowed flex items-center justify-center"
+          className="px-4 py-3 text-white rounded-lg text-sm hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center font-medium"
+          style={{
+            backgroundColor: dayColorThemes.Monday.main,
+            boxShadow: `0 4px 14px 0 ${dayColorThemes.Monday.main}40`,
+          }}
         >
           {isSubmitting ? (
             <>
@@ -265,7 +486,7 @@ const SimpleTimetable: React.FC<TimetableProps> = ({
 
         {feedback && (
           <div
-            className={`p-3 border rounded-lg text-sm ${
+            className={`p-4 border rounded-lg text-sm ${
               feedback.includes("conflicts")
                 ? "bg-red-50 border-red-200 text-red-800"
                 : "bg-green-50 border-green-200 text-green-800"
@@ -277,18 +498,11 @@ const SimpleTimetable: React.FC<TimetableProps> = ({
       </div>
 
       {showDownloadLink && (
-        <div className="mt-6 flex justify-between items-center">
-          <p className="text-sm text-gray-600">
-            <span className="font-medium">Note:</span> The schedule may be
-            subject to changes.
+        <div className="mt-8 pt-4 border-t border-gray-100 text-center">
+          <p className="text-sm text-gray-500">
+            <span className="font-medium">Note:</span> Schedule may be subject
+            to changes. Check regularly for updates.
           </p>
-          <Link
-            href={programmeUrl}
-            target="_blank"
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors"
-          >
-            Download Full Programme
-          </Link>
         </div>
       )}
     </div>

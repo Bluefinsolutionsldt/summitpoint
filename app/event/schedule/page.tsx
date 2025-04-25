@@ -2,6 +2,16 @@
 
 import { useState } from "react";
 import SimpleTimetable from "@/components/ui/SimpleTimetable";
+import { CalendarDays, MapPin, Users, Building } from "lucide-react";
+
+// Day color themes for the schedule
+const dayColorThemes = {
+  Monday: "#F3AA4E", // Orange
+  Tuesday: "#98B7FF", // Blue
+  Wednesday: "#C7F1EC", // Teal
+  Thursday: "#D8BAFF", // Purple
+  Friday: "#FF93A8", // Pink
+};
 
 // Future Ready Summit 2025 schedule data
 const scheduleData = [
@@ -236,18 +246,92 @@ const timetableItems = scheduleData.flatMap((day) =>
 
 export default function SchedulePage() {
   return (
-    <div className="space-y-6">
-      <div className="bg-white rounded-xl shadow-sm p-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">
-          Future Ready Summit (FRS) 2025 Programme
-        </h1>
-        <p className="text-gray-600 mb-2">12th – 16th May 2025 | Tanzania</p>
-        <p className="text-gray-600 font-medium">
-          Theme: Innovation for a Resilient and Inclusive Future
-        </p>
-        <p className="text-gray-500 text-sm mt-2">
-          Co-Funded by: European Union, UNDP, Vodacom Tanzania
-        </p>
+    <div className="space-y-8">
+      <div className="rounded-2xl shadow-lg relative overflow-hidden bg-white">
+        {/* Color bars on top */}
+        <div className="absolute top-0 left-0 right-0 flex h-3">
+          <div
+            style={{ background: dayColorThemes.Monday, width: "20%" }}
+          ></div>
+          <div
+            style={{ background: dayColorThemes.Tuesday, width: "20%" }}
+          ></div>
+          <div
+            style={{ background: dayColorThemes.Wednesday, width: "20%" }}
+          ></div>
+          <div
+            style={{ background: dayColorThemes.Thursday, width: "20%" }}
+          ></div>
+          <div
+            style={{ background: dayColorThemes.Friday, width: "20%" }}
+          ></div>
+        </div>
+
+        {/* Header content */}
+        <div className="pt-6 px-8 pb-8">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold text-gray-800 mb-1">
+                Future Ready Summit 2025
+              </h1>
+              <p className="text-xl text-gray-600 font-light mb-4">
+                12th – 16th May | Tanzania
+              </p>
+
+              <div className="space-y-2 mt-6">
+                <div className="flex items-center text-gray-600">
+                  <CalendarDays className="w-5 h-5 mr-3 text-gray-400" />
+                  <span>5-day summit on innovation and technology</span>
+                </div>
+                <div className="flex items-center text-gray-600">
+                  <MapPin className="w-5 h-5 mr-3 text-gray-400" />
+                  <span>Diamond Jubilee Hall, Dar es Salaam</span>
+                </div>
+                <div className="flex items-center text-gray-600">
+                  <Users className="w-5 h-5 mr-3 text-gray-400" />
+                  <span>500+ attendees from across Africa</span>
+                </div>
+                <div className="flex items-center text-gray-600">
+                  <Building className="w-5 h-5 mr-3 text-gray-400" />
+                  <span>
+                    Co-Funded by: European Union, UNDP, Vodacom Tanzania
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="md:text-right">
+              <div className="inline-block bg-gray-50 p-5 rounded-xl border border-gray-100">
+                <h2 className="text-lg font-semibold text-gray-800 mb-3">
+                  Theme
+                </h2>
+                <p className="text-gray-700 font-medium text-lg">
+                  Innovation for a Resilient
+                  <br /> and Inclusive Future
+                </p>
+
+                <div className="mt-6 pt-4 border-t border-gray-200">
+                  <p className="text-sm font-medium text-gray-600 mb-2">
+                    Daily Color Legend
+                  </p>
+                  <div className="flex flex-wrap gap-3 justify-end">
+                    {Object.entries(dayColorThemes).map(([day, color]) => (
+                      <div key={day} className="flex items-center gap-2">
+                        <div
+                          className="w-4 h-4 rounded-full shadow-sm"
+                          style={{ background: color }}
+                        ></div>
+                        <span className="text-xs text-gray-700 font-medium">
+                          {day}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Timetable component with session selection */}

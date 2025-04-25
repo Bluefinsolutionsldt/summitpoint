@@ -37,7 +37,7 @@ const eventData = {
   dateRange: "May 12-16, 2025",
   venue: "JNICC, Dar es Salaam",
   description:
-    "The Future Ready Summit (FRS) 2025 will take place within Tanzania Innovation Week 2025 (IWTz2025), a dynamic platform cohosted by UNDP,Vodacom Tanzania and COSTECH. With its theme, 'Innovation for a Resilient and Inclusive Future,' IWTz2025 closely aligns with FRS 2025's ambition to shape smart, sustainable, and inclusive urban futures while addressing the evolving landscape of youth employment in the digital era.",
+    "In a spirit of collaboration and shared commitment to strengthening innovation and driving digital transformation, the United Nations Development Programme (UNDP) Tanzania through its FUNGUO Innovation Programme, which is funded by the European Union and the British Government, Vodacom Tanzania, and the Tanzania Commission for Science and Technology (COSTECH) are jointly hosting Innovation Week Tanzania 2025 (IWTz2025). Anchored by Vodacom's Future Ready Summit, this 11th edition of the Innovation Week Tanzania will take place from 12–16 May 2025 at the Julius Nyerere International Convention Centre in Dar es Salaam, with nationwide satellite activities. This year's theme, \"Innovation for a Resilient and Inclusive Future,\" reflects a shared commitment to shaping smart, sustainable, and inclusive urban futures, addressing youth jobs in the digital era, and accelerating the commercialization of research and innovation. Various activities such as exhibitions, workshops, conferences, policy dialogues, products and projects launch, virtual events, radio and TV programmes about innovation, are expected to take place across various places in the country in the weeks leading up to the main event.",
   coverImage: "/events/save.png",
   focusAreas: [
     {
@@ -230,32 +230,34 @@ export default function EventPage() {
   return (
     <div className="space-y-8 pb-12">
       {/* Hero Banner Section */}
-      <div className="relative w-full h-[350px] rounded-xl overflow-hidden shadow-lg">
+      <div className="relative w-full h-[250px] sm:h-[300px] md:h-[350px] rounded-xl overflow-hidden shadow-lg">
         <Image
           src={eventData.coverImage}
           alt={eventData.title}
           fill
-          style={{ objectFit: "cover" }}
+          style={{ objectFit: "cover", objectPosition: "center" }}
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 via-blue-800/60 to-transparent flex flex-col justify-end p-8">
-          <div className="bg-blue-600/30 text-white text-sm font-medium px-4 py-1 rounded-full w-max backdrop-blur-sm mb-3">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/100 via-blue-800/70 to-transparent flex flex-col justify-end p-4 sm:p-6 md:p-8">
+          <div className="bg-blue-600/30 text-white text-xs sm:text-sm font-medium px-3 py-1 rounded-full w-max backdrop-blur-sm mb-2 sm:mb-3">
             May 12-16, 2025
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1 sm:mb-2">
             {eventData.title}
           </h1>
-          <p className="text-xl text-white/90 font-light max-w-2xl mb-3">
+          <p className="text-sm sm:text-lg md:text-xl text-white/90 font-light max-w-2xl mb-2 sm:mb-3">
             {eventData.subtitle}
           </p>
-          <div className="flex items-center gap-4 text-white mt-2">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-white mt-1 sm:mt-2">
             <div className="flex items-center">
-              <MapPin className="h-5 w-5 mr-2" />
-              <span>{eventData.venue}</span>
+              <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
+              <span className="text-sm sm:text-base">{eventData.venue}</span>
             </div>
             <div className="flex items-center">
-              <Calendar className="h-5 w-5 mr-2" />
-              <span>{eventData.dateRange}</span>
+              <Calendar className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
+              <span className="text-sm sm:text-base">
+                {eventData.dateRange}
+              </span>
             </div>
           </div>
         </div>
@@ -264,9 +266,11 @@ export default function EventPage() {
       {/* Event Description */}
       <div className="bg-white rounded-xl shadow-sm p-8">
         <h2 className="text-2xl font-semibold text-blue-700 mb-4">
-          About #IWTZ and #FRS 2025
+          About IWTz2025
         </h2>
-        <p className="text-gray-700 leading-relaxed text-justify">{eventData.description}</p>
+        <p className="text-gray-700 leading-relaxed text-justify">
+          {eventData.description}
+        </p>
       </div>
 
       {/* Event Features Section */}
@@ -342,21 +346,21 @@ export default function EventPage() {
 
           {/* Surveys */}
           <FeatureCard
-            href="/event/surveys"
+            href="/event/feedback"
             icon={<BarChart3 className="h-8 w-8 text-blue-500" />}
-            title="Surveys"
-            description="Share your feedback"
+            title="Feedback & Suggestions"
+            description="Share your thoughts and ideas"
             bgColor="bg-blue-50"
           />
 
           {/* Suggestions */}
-          <FeatureCard
+          {/* <FeatureCard
             href="/event/suggestions"
             icon={<MessageSquare className="h-8 w-8 text-blue-500" />}
             title="Suggestions"
             description="Share your ideas"
             bgColor="bg-blue-50"
-          />
+          /> */}
         </div>
       </div>
 

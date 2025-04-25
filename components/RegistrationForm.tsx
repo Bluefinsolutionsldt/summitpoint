@@ -394,8 +394,11 @@ export function RegistrationForm() {
                       </FormControl>
                       <div className="space-y-1 leading-none">
                         <FormLabel className="text-sm font-normal text-gray-700">
-                          I agree and provide consent for my pictures and videos
-                          to be used on this platform
+                          I consent to be filmed and photographed during the
+                          event, and I agree that my image may be used in future
+                          non-commercial promotional materials, social media
+                          posts, and other event-related content by IWTz and FRS
+                          organizing partners.
                         </FormLabel>
                       </div>
                     </FormItem>
