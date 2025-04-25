@@ -1,33 +1,15 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, ArrowRight } from "lucide-react";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { Confetti } from "@/components/ui/confetti";
 
-function SuccessPageContent() {
+export default function SuccessPage() {
   const searchParams = useSearchParams();
   const firstName = searchParams.get("name") || "Participant";
-  const router = useRouter();
-  const [countdown, setCountdown] = useState(6);
-
-  useEffect(() => {
-    // Redirect after 6 seconds to allow confetti animation to show
-    const timer = setTimeout(() => {
-      router.push("/event");
-    }, 6000);
-
-    const countdownInterval = setInterval(() => {
-      setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-
-    return () => {
-      clearTimeout(timer);
-      clearInterval(countdownInterval);
-    };
-  }, [router]);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 flex flex-col items-center justify-center p-4">
@@ -70,17 +52,19 @@ function SuccessPageContent() {
 
             <div className="bg-blue-50 p-6 rounded-lg border border-blue-100 mb-6">
               <div className="flex items-center justify-center mb-4">
-                <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-full shadow-sm">
-                  <Loader2 className="h-5 w-5 text-blue-600 animate-spin" />
+                <Link
+                  href="/event"
+                  className="flex items-center gap-3 bg-white px-6 py-3 rounded-full shadow-sm hover:shadow-md transition-all hover:bg-blue-50"
+                >
                   <span className="font-medium text-blue-800">
-                    Redirecting to event page in {countdown} seconds...
+                    Continue to Event Page
                   </span>
-                </div>
+                  <ArrowRight className="h-5 w-5 text-blue-600" />
+                </Link>
               </div>
 
               <p className="text-center text-gray-700">
-                You will be automatically redirected to browse all sessions and
-                activities.
+                Proceed to browse all sessions and activities.
               </p>
             </div>
           </CardContent>
@@ -103,25 +87,5 @@ function SuccessPageContent() {
         </div>
       </div>
     </main>
-  );
-}
-
-// Create a loading fallback
-function SuccessPageFallback() {
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 flex flex-col items-center justify-center p-4">
-      <div className="flex items-center justify-center">
-        <Loader2 className="h-8 w-8 text-blue-600 animate-spin mr-2" />
-        <p className="text-lg font-medium text-blue-800">Loading...</p>
-      </div>
-    </div>
-  );
-}
-
-export default function SuccessPage() {
-  return (
-    <Suspense fallback={<SuccessPageFallback />}>
-      <SuccessPageContent />
-    </Suspense>
   );
 }
