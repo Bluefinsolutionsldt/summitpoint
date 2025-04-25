@@ -104,9 +104,6 @@ export function RegistrationForm() {
 
     // Short timeout to show the loading state for better UX
     setTimeout(() => {
-      // Extract first name from full name
-      const firstName = data.fullName.split(" ")[0];
-
       toast({
         title: "Registration Successful",
         description: "You have been registered for the event successfully!",
@@ -115,10 +112,8 @@ export function RegistrationForm() {
 
       setSubmitSuccess(true);
 
-      // Redirect to success page with name as query parameter
-      window.location.href = `/register/success?name=${encodeURIComponent(
-        firstName
-      )}`;
+      // Redirect to success page without query parameters
+      window.location.href = `/register/success`;
 
       setIsSubmitting(false);
     }, 1500);

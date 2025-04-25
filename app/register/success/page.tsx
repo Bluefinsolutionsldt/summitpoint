@@ -6,17 +6,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { Confetti } from "@/components/ui/confetti";
 import { Button } from "@/components/ui/button";
-import { use } from "react";
 
-type PageProps = {
-  searchParams: Promise<{
-    name?: string;
-  }>;
-};
-
-export default function SuccessPage({ searchParams }: PageProps) {
-  const params = use(searchParams);
-  const firstName = params.name || "Participant";
+export default function SuccessPage() {
+  // Hardcoded name instead of using query parameters
+  const firstName = "Participant";
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 flex flex-col items-center justify-center p-4">
@@ -65,7 +58,7 @@ export default function SuccessPage({ searchParams }: PageProps) {
                 <p>
                   We encourage you to visit the event registration page to
                   browse other sessions and activities that may be of interest
-                  to you by clicking the button below.
+                  to you by clicking the LINK below.
                 </p>
 
                 <p>Looking forward to seeing you at JNICC.</p>
