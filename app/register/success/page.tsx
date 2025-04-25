@@ -3,13 +3,19 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, ArrowRight } from "lucide-react";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Confetti } from "@/components/ui/confetti";
+import { use } from "react";
 
-export default function SuccessPage() {
-  const searchParams = useSearchParams();
-  const firstName = searchParams.get("name") || "Participant";
+type PageProps = {
+  searchParams: Promise<{
+    name?: string;
+  }>;
+};
+
+export default function SuccessPage({ searchParams }: PageProps) {
+  const params = use(searchParams);
+  const firstName = params.name || "Participant";
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 flex flex-col items-center justify-center p-4">
@@ -24,7 +30,6 @@ export default function SuccessPage() {
             width={600}
             height={200}
             className="w-full h-auto object-contain max-h-[120px]"
-            priority
           />
         </div>
 
