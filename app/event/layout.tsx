@@ -7,32 +7,11 @@ import Image from "next/image";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/lib/AuthContext";
 
-// Navigation items for event pages
-const navItems = [
-  { title: "Overview", path: "", icon: "BookOpenIcon" },
-  { title: "Location", path: "/venue", icon: "MapPinIcon" },
-  { title: "Photos", path: "/gallery", icon: "CameraIcon" },
-  { title: "Timetable", path: "/schedule", icon: "ClockIcon" },
-  { title: "Speakers", path: "/speakers", icon: "UsersIcon" },
-  { title: "Chatroom", path: "/chatroom", icon: "MessageCircleIcon" },
-  { title: "Surveys", path: "/surveys", icon: "BarChart3Icon" },
-  { title: "Documents", path: "/documents", icon: "FileTextIcon" },
-  { title: "Sessions", path: "/sessions", icon: "FileQuestionIcon" },
-  { title: "Live Stream", path: "/livestream", icon: "VideoIcon" },
-  { title: "Suggestions", path: "/suggestions", icon: "MessageSquareIcon" },
-];
-
 interface EventLayoutProps {
   children: ReactNode;
 }
 
 export default function EventLayout({ children }: EventLayoutProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const { user, isAuthenticated, loading } = useAuth();
-  const [isClient, setIsClient] = useState(false);
-
-
   return (
     <div className="min-h-screen bg-[#F6F6F5] flex flex-col">
       {/* Header */}
@@ -59,15 +38,9 @@ export default function EventLayout({ children }: EventLayoutProps) {
             >
               Dashboard
             </Link>
-            {user && (
-              <div className="h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-medium">
-                {user.name.charAt(0).toUpperCase()}
-              </div>
-            )}
           </div>
         </div>
       </header>
-
 
       {/* Main content */}
       <main className="flex-grow">
