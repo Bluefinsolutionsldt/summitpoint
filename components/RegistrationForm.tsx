@@ -112,8 +112,10 @@ export function RegistrationForm() {
 
       setSubmitSuccess(true);
 
-      // Redirect to success page without query parameters
-      window.location.href = `/register/success`;
+      // Redirect to success page with name query parameter
+      window.location.href = `/register/success?name=${encodeURIComponent(
+        data.fullName
+      )}`;
 
       setIsSubmitting(false);
     }, 1500);

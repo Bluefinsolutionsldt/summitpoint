@@ -6,10 +6,21 @@ import Image from "next/image";
 import Link from "next/link";
 import { Confetti } from "@/components/ui/confetti";
 import { Button } from "@/components/ui/button";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 export default function SuccessPage() {
-  // Hardcoded name instead of using query parameters
-  const firstName = "Participant";
+  return (
+    <Suspense fallback={<SuccessPageSkeleton />}>
+      <SuccessPageContent />
+    </Suspense>
+  );
+}
+
+function SuccessPageContent() {
+  // Get name from query parameters
+  const searchParams = useSearchParams();
+  const name = searchParams.get("name") || "Participant";
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 flex flex-col items-center justify-center p-4">
@@ -48,7 +59,7 @@ export default function SuccessPage() {
               </h2>
 
               <div className="text-gray-700 space-y-4">
-                <p>Dear {firstName},</p>
+                <p>Dear {name},</p>
 
                 <p>
                   Thank you for registering for Innovation Week Tanzania 2025 &
@@ -89,6 +100,41 @@ export default function SuccessPage() {
               height={100}
               className="w-full max-w-xl h-auto object-contain"
             />
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
+
+// Skeleton component to show while the content is loading
+function SuccessPageSkeleton() {
+  return (
+    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-3xl mx-auto">
+        <div className="mb-8 text-center">
+          <div className="h-[120px] bg-gray-200 rounded animate-pulse" />
+        </div>
+        <div className="border-0 shadow-xl bg-white overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-6 px-8">
+            <div className="h-8 bg-white bg-opacity-20 rounded w-48 animate-pulse" />
+          </div>
+          <div className="p-8">
+            <div className="flex justify-center mb-6">
+              <div className="w-20 h-20 bg-gray-200 rounded-full animate-pulse" />
+            </div>
+            <div className="bg-blue-50 p-6 rounded-lg border border-blue-100 mb-6">
+              <div className="h-6 bg-gray-200 rounded w-3/4 mx-auto mb-4 animate-pulse" />
+              <div className="space-y-4">
+                <div className="h-4 bg-gray-200 rounded w-32 animate-pulse" />
+                <div className="h-4 bg-gray-200 rounded w-full animate-pulse" />
+                <div className="h-4 bg-gray-200 rounded w-full animate-pulse" />
+                <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
+              </div>
+              <div className="mt-6 flex justify-center">
+                <div className="h-10 bg-gray-200 rounded w-40 animate-pulse" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
