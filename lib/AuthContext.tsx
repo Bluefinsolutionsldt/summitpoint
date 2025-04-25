@@ -7,7 +7,7 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
-import { setAuthToken } from "./api";
+import { setAuthToken, authAPI } from "./api";
 import { useRouter } from "next/navigation";
 
 interface User {
@@ -19,7 +19,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   error: string | null;
-  login: (name: string, email: string) => Promise<void>;
+  login: (name: string, email: string, redirectPath?: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -28,6 +28,21 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Use localStorage for a simple auth solution
 const AUTH_STORAGE_KEY = "summit_point_auth";
+
+// Helper function to set cookie
+const setCookie = (name: string, value: string, days: number = 7) => {
+  if (typeof window === "undefined") return;
+
+  const expires = new Date();
+  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+  document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
+};
+
+// Helper function to remove cookie
+const removeCookie = (name: string) => {
+  if (typeof window === "undefined") return;
+  document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+};
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -57,19 +72,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     loadAuthState();
   }, []);
 
-  const login = async (name: string, email: string) => {
+  const login = async (name: string, email: string, redirectPath?: string) => {
     setLoading(true);
     setError(null);
+    console.log(
+      `Login attempt with name: ${name}, email: ${email}, redirectPath: ${redirectPath}`
+    );
 
     try {
-      // In a real app, you would validate credentials with an API
-      // For now, we'll just accept any credentials
+      // Get authentication token from API
+      console.log("Attempting to get token from API...");
+      const token = await authAPI.createToken(name, email);
+      console.log(
+        "Token received:",
+        token ? "Token received successfully" : "No token received"
+      );
+
+      // Set the token in API client headers
+      setAuthToken(token);
+      console.log("Token set in API client headers");
+
+      // Set the token in cookie for middleware access
+      setCookie("auth_token", token);
+      console.log("Token set in cookie for middleware access");
 
       // Create user object
       const userData = { name, email };
       setUser(userData);
+      console.log("User data set in state:", userData);
 
-      // Save to localStorage
+      // Save user data to localStorage
       if (typeof window !== "undefined") {
         localStorage.setItem(
           AUTH_STORAGE_KEY,
@@ -78,21 +110,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             timestamp: Date.now(),
           })
         );
+        console.log("User data saved to localStorage");
       }
 
-      // Redirect to dashboard
-      router.push("/dashboard");
+      // Redirect to specified path or event by default
+      console.log(`Redirecting to: ${redirectPath || "/event"}`);
+      router.push(redirectPath || "/event");
+      console.log("Router.push called");
     } catch (err) {
       console.error("Login error:", err);
       setError("Authentication failed. Please try again.");
       throw err;
     } finally {
       setLoading(false);
+      console.log("Login process completed");
     }
   };
 
   const logout = () => {
     setUser(null);
+
+    // Clear the auth token
+    setAuthToken("");
+
+    // Remove the auth token cookie
+    removeCookie("auth_token");
 
     // Clear localStorage
     if (typeof window !== "undefined") {

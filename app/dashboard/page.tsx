@@ -1,197 +1,350 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
-import EventCard from "@/components/ui/EventCard";
-import { fetchEvents } from "@/lib/api-util";
+import Link from "next/link";
+import Timetable from "@/components/ui/Timetable";
 
-// Event interface
-interface Event {
-  id: number;
-  name: string;
-  startDate: string;
-  endDate: string;
-  description: string | null;
-  city: string;
-  venue: string;
-  bannerImage: string;
-  themeColor: string;
-  organization: {
-    id: number;
-    name: string;
-    address: string | null;
-    phone: string | null;
-    logo: string | null;
-  };
-}
+export default function DashboardPage() {
+  const { user, logout } = useAuth();
+  const [isClient, setIsClient] = useState(false);
 
-// Filter options type
-type FilterOption = "all" | "upcoming" | "ongoing";
+  // Timetable data based on the document
+  const timetableData = [
+    {
+      id: "1",
+      day: "Tuesday",
+      date: "March 26th, 2024",
+      time: "08:00 - 09:00",
+      session: "Registration of Participants",
+      speaker: "",
+      location: "Main Entrance",
+    },
+    {
+      id: "2",
+      day: "Tuesday",
+      date: "March 26th, 2024",
+      time: "09:00 - 09:30",
+      session: "Opening Ceremony",
+      speaker: "Chief Guest",
+      location: "Main Hall",
+    },
+    {
+      id: "3",
+      day: "Tuesday",
+      date: "March 26th, 2024",
+      time: "09:30 - 10:30",
+      session: "Keynote Address: Financing Regions for Sustainable Development",
+      speaker: "Dr. Samuel Waweru",
+      location: "Main Hall",
+    },
+    {
+      id: "4",
+      day: "Tuesday",
+      date: "March 26th, 2024",
+      time: "10:30 - 11:00",
+      session: "Coffee Break",
+      speaker: "",
+      location: "Exhibition Area",
+    },
+    {
+      id: "5",
+      day: "Tuesday",
+      date: "March 26th, 2024",
+      time: "11:00 - 12:30",
+      session: "Panel Discussion: Regional Financing Models",
+      speaker: "Various Experts",
+      location: "Main Hall",
+    },
+    {
+      id: "6",
+      day: "Tuesday",
+      date: "March 26th, 2024",
+      time: "12:30 - 14:00",
+      session: "Lunch Break",
+      speaker: "",
+      location: "Dining Area",
+    },
+    {
+      id: "7",
+      day: "Wednesday",
+      date: "March 27th, 2024",
+      time: "09:00 - 10:30",
+      session: "Workshop: Financing Infrastructure Projects",
+      speaker: "Ms. Jane Njoroge",
+      location: "Workshop Room A",
+    },
+    {
+      id: "8",
+      day: "Wednesday",
+      date: "March 27th, 2024",
+      time: "10:30 - 11:00",
+      session: "Coffee Break",
+      speaker: "",
+      location: "Exhibition Area",
+    },
+    {
+      id: "9",
+      day: "Wednesday",
+      date: "March 27th, 2024",
+      time: "11:00 - 12:30",
+      session: "Case Studies: Successful Regional Financing Initiatives",
+      speaker: "Various Presenters",
+      location: "Main Hall",
+    },
+    {
+      id: "10",
+      day: "Wednesday",
+      date: "March 27th, 2024",
+      time: "12:30 - 14:00",
+      session: "Networking Lunch",
+      speaker: "",
+      location: "Dining Area",
+    },
+    {
+      id: "11",
+      day: "Wednesday",
+      date: "March 27th, 2024",
+      time: "14:00 - 15:30",
+      session: "Closing Ceremony and Way Forward",
+      speaker: "Event Organizers",
+      location: "Main Hall",
+    },
+  ];
 
-export default function Dashboard() {
-  const { user, isAuthenticated, loading } = useAuth();
-  const router = useRouter();
-  const [events, setEvents] = useState<Event[]>([]);
-  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState<FilterOption>("upcoming");
-
-  // Get time-based greeting
-  const getTimeBasedGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Good morning";
-    if (hour < 18) return "Good afternoon";
-    return "Good evening";
-  };
-
-  // Redirect to login if not authenticated
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      router.push("/login");
-    }
-  }, [isAuthenticated, loading, router]);
+    setIsClient(true);
+  }, []);
 
-  // Fetch events
-  useEffect(() => {
-    const getEvents = async () => {
-      try {
-        setIsLoading(true);
-        const data = await fetchEvents();
-        console.log("Dashboard events data:", data[0]); // Log the first event to see structure
-        setEvents(data || []);
-        setFilteredEvents(data || []);
-      } catch (error) {
-        console.error("Error fetching events:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (isAuthenticated) {
-      getEvents();
-    }
-  }, [isAuthenticated]);
-
-  // Filter events based on selected filter
-  useEffect(() => {
-    const now = new Date();
-
-    let filtered = [...events];
-
-    if (activeFilter === "upcoming") {
-      filtered = events.filter((event) => {
-        const startDate = new Date(event.startDate);
-        return startDate > now;
-      });
-    } else if (activeFilter === "ongoing") {
-      filtered = events.filter((event) => {
-        const startDate = new Date(event.startDate);
-        const endDate = new Date(event.endDate);
-        return startDate <= now && endDate >= now;
-      });
-    }
-
-    setFilteredEvents(filtered);
-  }, [activeFilter, events]);
-
-  // Filter change handler
-  const handleFilterChange = (filter: FilterOption) => {
-    setActiveFilter(filter);
-  };
-
-  // Show loading state
-  if (loading || isLoading) {
+  // Show loading state if rendering on the server or during initial client load
+  if (!isClient) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-lg">Loading...</p>
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
   }
 
-  // Protected content (only shown if authenticated)
   return (
-    <div className="container mx-auto px-4 py-0">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 p-6 rounded-xl shadow-sm">
-        <div className="flex items-center gap-4">
+    <div className="container mx-auto py-8 px-4">
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            {user && (
-              <p className="text-black dark:text-gray-400 mt-1 font-medium text-lg sm:text-[3rem] gap-4 flex flex-col">
-                {getTimeBasedGreeting()},{" "}
-                <span className="text-blue-600 text-lg sm:text-xl  dark:text-blue-400">
-                  {user.name}
-                </span>
-              </p>
-            )}
+            <h1 className="text-2xl font-bold text-gray-900">
+              Welcome to your Dashboard
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Hello, {user?.name || "User"}! Here's your personalized dashboard.
+            </p>
+          </div>
+          <button
+            onClick={logout}
+            className="px-4 py-2 text-sm bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* User Profile Card */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Your Profile
+            </h2>
+            <span className="text-xs bg-green-100 text-green-800 py-1 px-2 rounded-full">
+              Active
+            </span>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-blue-600"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-gray-500">Name</p>
+                <p className="font-medium">{user?.name || "Not available"}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-blue-600"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-gray-500">Email</p>
+                <p className="font-medium">{user?.email || "Not available"}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+              Edit Profile
+            </button>
+          </div>
+        </div>
+
+        {/* Recent Activity Card */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Recent Activity
+          </h2>
+          <div className="space-y-4">
+            <div className="flex items-start">
+              <div className="min-w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mt-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 text-green-600"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="font-medium">Account created</p>
+                <p className="text-sm text-gray-500">Just now</p>
+              </div>
+            </div>
+
+            <div className="flex items-start">
+              <div className="min-w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mt-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 text-blue-600"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                  <path
+                    fillRule="evenodd"
+                    d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="font-medium">Logged in successfully</p>
+                <p className="text-sm text-gray-500">Just now</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Links Card */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Quick Links
+          </h2>
+          <div className="grid grid-cols-2 gap-3">
+            <button className="flex flex-col items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 text-gray-700 mb-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+              <span className="text-sm font-medium">Profile</span>
+            </button>
+
+            <button className="flex flex-col items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 text-gray-700 mb-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+              <span className="text-sm font-medium">Events</span>
+            </button>
+
+            <button className="flex flex-col items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 text-gray-700 mb-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                />
+              </svg>
+              <span className="text-sm font-medium">Tasks</span>
+            </button>
+
+            <button className="flex flex-col items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 text-gray-700 mb-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <span className="text-sm font-medium">Reports</span>
+            </button>
           </div>
         </div>
       </div>
 
-      <div className="mb-6">
-        <div className="flex space-x-2 border-b border-gray-200">
-          <button
-            onClick={() => handleFilterChange("all")}
-            className={`py-2 px-4 font-medium ${
-              activeFilter === "all"
-                ? "text-blue-600 border-b-2 border-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            All Events
-          </button>
-          <button
-            onClick={() => handleFilterChange("upcoming")}
-            className={`py-2 px-4 font-medium ${
-              activeFilter === "upcoming"
-                ? "text-blue-600 border-b-2 border-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            Upcoming Events
-          </button>
-          <button
-            onClick={() => handleFilterChange("ongoing")}
-            className={`py-2 px-4 font-medium ${
-              activeFilter === "ongoing"
-                ? "text-blue-600 border-b-2 border-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            Ongoing Events
-          </button>
-        </div>
+      {/* Timetable Section */}
+      <div className="mt-8">
+        <Timetable
+          items={timetableData}
+          programmeUrl="/events/FRS_Programme 25.03.25.pdf"
+        />
       </div>
-
-      {filteredEvents.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEvents.map((event) => (
-            <EventCard
-              key={event.id}
-              id={event.id}
-              name={event.name}
-              startDate={event.startDate}
-              endDate={event.endDate}
-              description={event.description}
-              city={event.city}
-              venue={event.venue}
-              bannerImage={event.bannerImage}
-              themeColor={event.themeColor}
-              organization={event.organization}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="bg-white rounded-lg shadow p-8 text-center">
-          <h3 className="text-xl font-semibold mb-2">No events found</h3>
-          <p className="text-gray-600">
-            {activeFilter === "all"
-              ? "There are no events at the moment. Please check back later."
-              : activeFilter === "upcoming"
-              ? "There are no upcoming events at the moment. Please check back later."
-              : "There are no ongoing events at the moment. Please check back later."}
-          </p>
-        </div>
-      )}
     </div>
   );
 }

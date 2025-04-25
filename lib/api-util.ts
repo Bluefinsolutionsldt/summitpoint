@@ -1,15 +1,21 @@
 import { NextResponse } from 'next/server';
+import config from './config';
 
 // API authorization token
-export const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoibXVzc2FraXNlbmFAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiUGFydGljaXBhbnQiLCJzdWIiOiJiZjc1Y2I2My0yNGFmLTRjMzktOGQwYS0yOGJlYWNiNDYxNDkiLCJuYmYiOiIxNzQ1NDExNzg0IiwiZXhwIjoiMTc3Njk0Nzc4NCJ9.4zB6qfDupHwEn3aSMrrMdRxOGdnoWl4zlL1KZEilr30';
+export const AUTH_TOKEN = config.auth.staticToken;
 
 // API base URL
-export const API_BASE_URL = 'https://summitpoint.co.tz';
+export const API_BASE_URL = config.API_BASE_URL;
 
 // Headers with authorization
 export const getAuthHeaders = () => ({
   'Authorization': `Bearer ${AUTH_TOKEN}`
 });
+
+// Function to determine if we should use sample data
+export const shouldUseSampleData = () => {
+  return config.shouldUseSampleData();
+};
 
 // Function to fetch all events
 export const fetchEvents = async () => {
@@ -198,61 +204,74 @@ export const fetchEventById = async (eventId: string | number) => {
   const eventIdNum = typeof eventId === 'string' ? parseInt(eventId, 10) : eventId;
   const matchingSampleEvent = sampleEvents.find(event => event.id === eventIdNum);
   
-  // If we have a matching sample event and it's one of our known IDs, return it immediately
-  if (matchingSampleEvent && [158, 176, 177].includes(eventIdNum)) {
-    console.log(`Using hardcoded sample data for event ${eventId}`);
-    return matchingSampleEvent;
+  // If we should use sample data and have a matching event, return it immediately
+  if (shouldUseSampleData()) {
+    if (matchingSampleEvent && [158, 176, 177].includes(eventIdNum)) {
+      console.log(`Using hardcoded sample data for event ${eventId}`);
+      return matchingSampleEvent;
+    }
   }
   
   try {
-    // Make API call
-    console.log(`Attempting API call for event ${eventId}`);
-    const response = await fetch(`${API_BASE_URL}/api/v2/events/${eventId}`, {
-      headers: getAuthHeaders(),
-      next: { revalidate: 3600 } // Cache for 1 hour
-    });
-    
-    if (!response.ok) {
-      // Return null instead of throwing for 400/404 errors
-      if (response.status === 400 || response.status === 404) {
-        console.log(`Event ${eventId} not found: ${response.status}`);
-        
-        // If API failed but we have a matching sample event as fallback, return it
-        if (matchingSampleEvent) {
-          console.log(`Falling back to sample data for event ${eventId}`);
-          return matchingSampleEvent;
-        }
-        
-        // Default to the first sample event if nothing else works
-        console.log('Falling back to default sample event');
-        return sampleEvents[0];
+    // First try our internal API which might have better error handling
+    try {
+      console.log(`Attempting internal API call for event ${eventId}`);
+      const internalResponse = await fetch(`/api/events/${eventId}`, {
+        next: { revalidate: 3600 }
+      });
+      
+      if (internalResponse.ok) {
+        const data = await internalResponse.json();
+        console.log(`Event ${eventId} fetched successfully from internal API`);
+        return data;
+      } else {
+        console.log(`Internal API failed for event ${eventId}: ${internalResponse.status}`);
       }
-      
-      // For other errors, try the fallback
-      console.error(`Failed to fetch event: ${response.status}`);
-      
-      if (matchingSampleEvent) {
-        console.log(`Falling back to sample data for event ${eventId} after fetch error`);
-        return matchingSampleEvent;
-      }
-      
-      // Default to the first sample event if nothing else works
-      console.log('Falling back to default sample event after fetch error');
-      return sampleEvents[0];
+    } catch (internalError) {
+      console.error('Internal API call failed:', internalError);
     }
     
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching event:', error);
+    // If that fails, try the direct API call
+    try {
+      // Make direct API call
+      console.log(`Attempting direct API call for event ${eventId}`);
+      const response = await fetch(`${API_BASE_URL}/api/v2/events/${eventId}`, {
+        headers: getAuthHeaders(),
+        next: { revalidate: 3600 } // Cache for 1 hour
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log(`Event ${eventId} fetched successfully from direct API`);
+        return data;
+      } else {
+        console.error(`Failed to fetch event from direct API: ${response.status}`);
+      }
+    } catch (directError) {
+      console.error('Direct API call failed:', directError);
+    }
     
-    // If API call failed completely, use sample data
+    // If all API calls fail, use sample data as fallback
+    if (matchingSampleEvent) {
+      console.log(`Falling back to sample data for event ${eventId} after all API calls failed`);
+      return matchingSampleEvent;
+    }
+    
+    // Default to first sample event if we have no match
+    console.log('Falling back to default sample event');
+    return sampleEvents[0];
+    
+  } catch (error) {
+    console.error('Error in fetchEventById:', error);
+    
+    // Always provide fallback data to ensure the UI works
     if (matchingSampleEvent) {
       console.log(`Falling back to sample data for event ${eventId} after exception`);
       return matchingSampleEvent;
     }
     
-    // Default to the first sample event if nothing else works
-    console.log('Falling back to default sample event after exception');
+    // Last resort - return first sample event
+    console.log('Falling back to first sample event as last resort');
     return sampleEvents[0];
   }
 };
