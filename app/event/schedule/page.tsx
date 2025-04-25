@@ -285,7 +285,10 @@ export default function SchedulePage() {
                 </div>
                 <div className="flex items-center text-gray-600">
                   <MapPin className="w-5 h-5 mr-3 text-gray-400" />
-                  <span>Diamond Jubilee Hall, Dar es Salaam</span>
+                  <span>
+                    Julius Nyerere International Convention Centre (JNICC), Dar
+                    es Salaam, Tanzania
+                  </span>
                 </div>
                 <div className="flex items-center text-gray-600">
                   <Users className="w-5 h-5 mr-3 text-gray-400" />
@@ -300,7 +303,7 @@ export default function SchedulePage() {
               </div>
             </div>
 
-            <div className="md:text-right">
+            <div className="md:text-right w-full md:w-1/4">
               <div className="inline-block bg-gray-50 p-5 rounded-xl border border-gray-100">
                 <h2 className="text-lg font-semibold text-gray-800 mb-3">
                   Theme
@@ -309,25 +312,6 @@ export default function SchedulePage() {
                   Innovation for a Resilient
                   <br /> and Inclusive Future
                 </p>
-
-                <div className="mt-6 pt-4 border-t border-gray-200">
-                  <p className="text-sm font-medium text-gray-600 mb-2">
-                    Daily Color Legend
-                  </p>
-                  <div className="flex flex-wrap gap-3 justify-end">
-                    {Object.entries(dayColorThemes).map(([day, color]) => (
-                      <div key={day} className="flex items-center gap-2">
-                        <div
-                          className="w-4 h-4 rounded-full shadow-sm"
-                          style={{ background: color }}
-                        ></div>
-                        <span className="text-xs text-gray-700 font-medium">
-                          {day}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
               </div>
             </div>
           </div>

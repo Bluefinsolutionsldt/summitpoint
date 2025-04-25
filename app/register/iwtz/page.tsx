@@ -134,13 +134,17 @@ export default function RegistrationPage() {
               Join the Innovation Movement
             </h2>
             <p className="text-gray-600 text-sm text-justify mb-6">
-              The Future Ready Summit (FRS) 2025 will take place within Tanzania
-              Innovation Week 2025 (IWTz2025), a dynamic platform cohosted by
-              UNDP and Vodacom Tanzania. With its theme, 'Innovation for a
-              Resilient and Inclusive Future,' IWTz2025 closely aligns with FRS
-              2025's ambition to shape smart, sustainable, and inclusive urban
-              futures while addressing the evolving landscape of youth
-              employment in the digital era.
+              n a spirit of collaboration and shared commitment to strengthening
+              innovation and driving digital transformation, the United Nations
+              Development Programme (UNDP) Tanzania through its FUNGUO
+              Innovation Programme, which is funded by the European Union and
+              the British Government, Vodacom Tanzania, and the Tanzania
+              Commission for Science and Technology (COSTECH) are jointly
+              hosting Innovation Week Tanzania 2025 (IWTz2025). Anchored by
+              Vodacom’s Future Ready Summit, this 11th edition of the Innovation
+              Week Tanzania will take place from 12–16 May 2025 at the Julius
+              Nyerere International Convention Centre in Dar es Salaam, with
+              nationwide satellite activities
             </p>
 
             {/* Sponsors section for mobile */}
