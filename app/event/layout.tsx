@@ -1,11 +1,6 @@
-"use client";
-
-import { ReactNode, useState, useEffect } from "react";
+import { ReactNode } from "react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { useAuth } from "@/lib/AuthContext";
 
 interface EventLayoutProps {
   children: ReactNode;

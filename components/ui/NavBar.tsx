@@ -136,10 +136,10 @@ export default function NavBar() {
                   Sign in
                 </Link>
                 <Link
-                  href="/register"
+                  href="/event"
                   className="px-3 py-2 rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
                 >
-                  Register
+                  Event
                 </Link>
               </div>
             )}
@@ -275,11 +275,11 @@ export default function NavBar() {
                   Sign in
                 </Link>
                 <Link
-                  href="/register"
+                  href="/event"
                   className="block text-center py-2 px-4 rounded-md text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Register
+                  Event
                 </Link>
               </div>
             )}

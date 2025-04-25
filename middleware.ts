@@ -6,8 +6,8 @@ export function middleware(request: NextRequest) {
   // Get the pathname of the request
   const path = request.nextUrl.pathname;
   
-  // Define paths that should be protected
-  const isProtectedPath = path.startsWith('/dashboard') || path.startsWith('/event');
+  // Define paths that should be protected - removing /event from protected paths
+  const isProtectedPath = path.startsWith('/dashboard');
                          
   // Check for auth token in cookies
   const authToken = request.cookies.get('auth_token')?.value;
