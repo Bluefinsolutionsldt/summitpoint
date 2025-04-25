@@ -147,21 +147,11 @@ function SuccessPageContent() {
                 </p>
 
                 <div className="flex flex-col items-center gap-2 mt-2">
-                  <Button
-                    onClick={handleOpenEvent}
-                    disabled={isLoggingIn}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 h-auto"
-                    size="lg"
-                  >
-                    {isLoggingIn ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        {statusMessage || "Logging in..."}
-                      </>
-                    ) : (
-                      "Open Event Page"
-                    )}
-                  </Button>
+                  <Link href="/event" className="w-full">
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                      Visit Event Page
+                    </Button>
+                  </Link>
 
                   {/* Alternative direct link as fallback */}
                   {isLoggingIn && (
