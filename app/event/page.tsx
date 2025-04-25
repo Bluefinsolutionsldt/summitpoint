@@ -37,7 +37,7 @@ const eventData = {
   dateRange: "May 12-16, 2025",
   venue: "JNICC, Dar es Salaam",
   description:
-    "The Future Ready Summit (FRS) 2025 will take place within Tanzania Innovation Week 2025 (IWTz2025), a dynamic platform cohosted by UNDP and Vodacom Tanzania. With its theme, 'Innovation for a Resilient and Inclusive Future,' IWTz2025 closely aligns with FRS 2025's ambition to shape smart, sustainable, and inclusive urban futures while addressing the evolving landscape of youth employment in the digital era.",
+    "The Future Ready Summit (FRS) 2025 will take place within Tanzania Innovation Week 2025 (IWTz2025), a dynamic platform cohosted by UNDP  Vodacom and COSTECH Tanzania. With its theme, 'Innovation for a Resilient and Inclusive Future,' IWTz2025 closely aligns with FRS 2025's ambition to shape smart, sustainable, and inclusive urban futures while addressing the evolving landscape of youth employment in the digital era.",
   coverImage: "/events/save.png",
   focusAreas: [
     {
@@ -264,7 +264,7 @@ export default function EventPage() {
       {/* Event Description */}
       <div className="bg-white rounded-xl shadow-sm p-8">
         <h2 className="text-2xl font-semibold text-blue-700 mb-4">
-          About the Summit
+          bout #IWTZ and #FRS 2025
         </h2>
         <p className="text-gray-700 leading-relaxed">{eventData.description}</p>
       </div>

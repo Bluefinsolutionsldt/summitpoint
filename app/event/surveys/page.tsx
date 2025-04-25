@@ -1,241 +1,692 @@
 "use client";
 
 import { useState } from "react";
-import { BarChart3, CheckCircle } from "lucide-react";
+import {
+  CheckSquare,
+  MessageSquare,
+  FileText,
+  AlertCircle,
+  CheckCircle,
+  X,
+  ChevronDown,
+  Info,
+  Clock,
+} from "lucide-react";
 
-// Mock survey data
-const survey = {
-  id: 122,
-  name: "EVENT SURVEY",
-  description:
-    "Please take a few minutes to share your feedback about the event",
-  questions: [
-    {
-      id: 882,
-      question: "Do you believe Uganda can achieve Energy sufficiency?",
-      questionType: "radio",
-      answers: ["Yes", "No"],
-      required: true,
-    },
-    {
-      id: 883,
-      question: "What is the primary challenge of the Electric grid of Uganda?",
-      questionType: "radio",
-      answers: [
-        "Insufficient generation",
-        "Seasonal fluctuations in capacity",
-        "Rising demand",
-        "Poor distribution infrastructure",
-      ],
-      required: true,
-    },
-    {
-      id: 884,
-      question: "Where do you wish the next Energy Summit should take place?",
-      questionType: "radio",
-      answers: ["Entebbe", "Kampala", "Hoima", "Mbarara"],
-      required: true,
-    },
-    {
-      id: 885,
-      question:
-        "Which topics would you like to see covered at future events? (Select all that apply)",
-      questionType: "checkbox",
-      answers: [
-        "Renewable energy",
-        "Energy policy",
-        "Distribution networks",
-        "Rural electrification",
-        "Smart grid technology",
-        "Energy financing",
-      ],
-      required: false,
-    },
-    {
-      id: 886,
-      question: "Please share any additional comments or suggestions",
-      questionType: "text",
-      required: false,
-    },
-  ],
-};
+// Define types
+interface SurveyQuestion {
+  id: number;
+  question: string;
+  questionType: "multiple-choice" | "rating" | "text" | "boolean";
+  options?: string[];
+  isRequired: boolean;
+}
+
+interface Survey {
+  id: number;
+  title: string;
+  description: string;
+  deadline?: string;
+  status: "active" | "completed" | "upcoming";
+  questions: SurveyQuestion[];
+}
+
+// Sample surveys data
+const surveys: Survey[] = [
+  {
+    id: 1,
+    title: "Opening Ceremony Feedback",
+    description:
+      "Please share your feedback on the Opening Ceremony of Future Ready Summit 2025.",
+    deadline: "May 12, 2025 - 22:00 EAT",
+    status: "active",
+    questions: [
+      {
+        id: 1,
+        question: "How would you rate the Opening Ceremony overall?",
+        questionType: "rating",
+        isRequired: true,
+      },
+      {
+        id: 2,
+        question:
+          "Which part of the Opening Ceremony did you find most valuable?",
+        questionType: "multiple-choice",
+        options: [
+          "Keynote address",
+          "Panel discussion",
+          "Networking opportunity",
+          "Event facilities and setup",
+          "Other",
+        ],
+        isRequired: true,
+      },
+      {
+        id: 3,
+        question: "Did the Opening Ceremony meet your expectations?",
+        questionType: "boolean",
+        isRequired: true,
+      },
+      {
+        id: 4,
+        question:
+          "Please provide any additional comments or suggestions for improvement.",
+        questionType: "text",
+        isRequired: false,
+      },
+    ],
+  },
+  {
+    id: 2,
+    title: "Digital Inclusion Panel Feedback",
+    description:
+      "Share your thoughts on the Digital Inclusion Panel discussion.",
+    deadline: "May 12, 2025 - 18:00 EAT",
+    status: "active",
+    questions: [
+      {
+        id: 1,
+        question:
+          "How would you rate the relevance of the Digital Inclusion Panel to your work?",
+        questionType: "rating",
+        isRequired: true,
+      },
+      {
+        id: 2,
+        question: "How knowledgeable were the panel speakers?",
+        questionType: "rating",
+        isRequired: true,
+      },
+      {
+        id: 3,
+        question: "Which topic discussed by the panel was most insightful?",
+        questionType: "multiple-choice",
+        options: [
+          "Bridging the digital divide",
+          "Inclusive design for all users",
+          "Policy recommendations",
+          "Implementation challenges",
+          "Future trends",
+        ],
+        isRequired: true,
+      },
+      {
+        id: 4,
+        question:
+          "What topics would you like to see covered in future panel discussions?",
+        questionType: "text",
+        isRequired: false,
+      },
+    ],
+  },
+  {
+    id: 3,
+    title: "Event Venue and Facilities",
+    description:
+      "Help us improve the event logistics and venue setup for future summits.",
+    deadline: "May 16, 2025 - 23:59 EAT",
+    status: "active",
+    questions: [
+      {
+        id: 1,
+        question: "How would you rate the overall venue facilities?",
+        questionType: "rating",
+        isRequired: true,
+      },
+      {
+        id: 2,
+        question: "Which aspects of the venue were most satisfactory?",
+        questionType: "multiple-choice",
+        options: [
+          "Accessibility",
+          "Seating arrangements",
+          "Audiovisual equipment",
+          "Wi-Fi connectivity",
+          "Catering services",
+          "Signage and directions",
+        ],
+        isRequired: true,
+      },
+      {
+        id: 3,
+        question: "Did you experience any difficulties navigating the venue?",
+        questionType: "boolean",
+        isRequired: true,
+      },
+      {
+        id: 4,
+        question:
+          "Please share any suggestions to improve the venue experience.",
+        questionType: "text",
+        isRequired: false,
+      },
+    ],
+  },
+  {
+    id: 4,
+    title: "Overall Event Satisfaction",
+    description:
+      "This comprehensive survey will help us improve future editions of the Future Ready Summit.",
+    deadline: "May 20, 2025 - 23:59 EAT",
+    status: "upcoming",
+    questions: [
+      {
+        id: 1,
+        question: "How would you rate your overall experience at the summit?",
+        questionType: "rating",
+        isRequired: true,
+      },
+      {
+        id: 2,
+        question: "Which aspects of the summit did you find most valuable?",
+        questionType: "multiple-choice",
+        options: [
+          "Keynote presentations",
+          "Panel discussions",
+          "Networking opportunities",
+          "Workshops",
+          "Exhibition area",
+          "Other",
+        ],
+        isRequired: true,
+      },
+      {
+        id: 3,
+        question: "Would you recommend this summit to colleagues?",
+        questionType: "boolean",
+        isRequired: true,
+      },
+      {
+        id: 4,
+        question: "How did you hear about this summit?",
+        questionType: "multiple-choice",
+        options: [
+          "Email invitation",
+          "Social media",
+          "Colleague recommendation",
+          "Organization website",
+          "Professional network",
+          "Other",
+        ],
+        isRequired: true,
+      },
+      {
+        id: 5,
+        question:
+          "Please share any additional feedback or suggestions for future summits.",
+        questionType: "text",
+        isRequired: false,
+      },
+    ],
+  },
+];
 
 export default function SurveysPage() {
-  const [responses, setResponses] = useState<Record<number, string | string[]>>(
-    {}
-  );
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState("");
+  const [activeSurvey, setActiveSurvey] = useState<Survey | null>(null);
+  const [answers, setAnswers] = useState<{ [key: number]: any }>({});
+  const [currentStep, setCurrentStep] = useState<number>(0);
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [activeFilter, setActiveFilter] = useState<
+    "all" | "active" | "completed" | "upcoming"
+  >("active");
 
-  const handleRadioChange = (questionId: number, answer: string) => {
-    setResponses({
-      ...responses,
-      [questionId]: answer,
-    });
+  // Filter surveys based on active filter
+  const filteredSurveys = surveys.filter((survey) => {
+    if (activeFilter === "all") return true;
+    return survey.status === activeFilter;
+  });
+
+  // Start survey handler
+  const startSurvey = (survey: Survey) => {
+    setActiveSurvey(survey);
+    setCurrentStep(0);
+    setAnswers({});
+    setShowSuccess(false);
   };
 
-  const handleCheckboxChange = (questionId: number, answer: string) => {
-    const currentAnswers = (responses[questionId] as string[]) || [];
-    const newAnswers = currentAnswers.includes(answer)
-      ? currentAnswers.filter((a) => a !== answer)
-      : [...currentAnswers, answer];
-
-    setResponses({
-      ...responses,
-      [questionId]: newAnswers,
-    });
+  // Close survey handler
+  const closeSurvey = () => {
+    setActiveSurvey(null);
+    setCurrentStep(0);
+    setAnswers({});
+    setShowSuccess(false);
   };
 
-  const handleTextChange = (questionId: number, answer: string) => {
-    setResponses({
-      ...responses,
-      [questionId]: answer,
-    });
+  // Handle answer changes
+  const handleAnswerChange = (questionId: number, value: any) => {
+    setAnswers((prev) => ({
+      ...prev,
+      [questionId]: value,
+    }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  // Navigation handlers
+  const nextQuestion = () => {
+    if (!activeSurvey) return;
 
-    // Validate required questions
-    const requiredQuestions = survey.questions.filter((q) => q.required);
-    const unanswered = requiredQuestions.filter(
-      (q) =>
-        !responses[q.id] ||
-        (Array.isArray(responses[q.id]) &&
-          (responses[q.id] as string[]).length === 0)
-    );
+    const currentQuestion = activeSurvey.questions[currentStep];
 
-    if (unanswered.length > 0) {
-      setError("Please answer all required questions");
+    // Validate required questions have answers
+    if (
+      currentQuestion.isRequired &&
+      (answers[currentQuestion.id] === undefined ||
+        answers[currentQuestion.id] === "" ||
+        (Array.isArray(answers[currentQuestion.id]) &&
+          answers[currentQuestion.id].length === 0))
+    ) {
+      // Highlight error (in a real app, you would show validation messages)
       return;
     }
 
-    // In a real app, you would submit the responses to an API here
-    console.log("Submitting survey responses:", responses);
-    setSubmitted(true);
-    setError("");
+    if (currentStep < activeSurvey.questions.length - 1) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      // Submit survey
+      submitSurvey();
+    }
+  };
+
+  const prevQuestion = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  // Submit survey
+  const submitSurvey = () => {
+    // In a real application, you would send the answers to an API
+    console.log("Survey submitted:", { surveyId: activeSurvey?.id, answers });
+    setShowSuccess(true);
+
+    // Reset after a delay
+    setTimeout(() => {
+      setActiveSurvey(null);
+      setCurrentStep(0);
+      setAnswers({});
+      setShowSuccess(false);
+    }, 3000);
+  };
+
+  // Render question based on type
+  const renderQuestion = (question: SurveyQuestion) => {
+    switch (question.questionType) {
+      case "rating":
+        return (
+          <div className="mt-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-gray-500">Poor</span>
+              <span className="text-sm text-gray-500">Excellent</span>
+            </div>
+            <div className="flex justify-between items-center">
+              {[1, 2, 3, 4, 5].map((rating) => (
+                <button
+                  key={rating}
+                  onClick={() => handleAnswerChange(question.id, rating)}
+                  className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-medium transition-colors
+                    ${
+                      answers[question.id] === rating
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                >
+                  {rating}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+
+      case "multiple-choice":
+        return (
+          <div className="mt-4 space-y-3">
+            {question.options?.map((option, idx) => (
+              <div
+                key={idx}
+                onClick={() => handleAnswerChange(question.id, option)}
+                className={`p-3 border rounded-lg cursor-pointer transition-colors
+                  ${
+                    answers[question.id] === option
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                  }`}
+              >
+                <div className="flex items-center">
+                  <div
+                    className={`w-5 h-5 rounded-full border flex items-center justify-center mr-3
+                    ${
+                      answers[question.id] === option
+                        ? "border-blue-500 bg-blue-500"
+                        : "border-gray-300"
+                    }`}
+                  >
+                    {answers[question.id] === option && (
+                      <div className="w-2 h-2 rounded-full bg-white"></div>
+                    )}
+                  </div>
+                  <span>{option}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+
+      case "boolean":
+        return (
+          <div className="mt-6 flex gap-4">
+            <button
+              onClick={() => handleAnswerChange(question.id, true)}
+              className={`flex-1 py-3 px-6 rounded-lg transition-colors
+                ${
+                  answers[question.id] === true
+                    ? "bg-green-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+            >
+              Yes
+            </button>
+            <button
+              onClick={() => handleAnswerChange(question.id, false)}
+              className={`flex-1 py-3 px-6 rounded-lg transition-colors
+                ${
+                  answers[question.id] === false
+                    ? "bg-red-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+            >
+              No
+            </button>
+          </div>
+        );
+
+      case "text":
+        return (
+          <div className="mt-4">
+            <textarea
+              value={answers[question.id] || ""}
+              onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+              placeholder="Type your answer here..."
+              className="w-full p-3 border border-gray-300 rounded-lg h-32 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        );
+
+      default:
+        return null;
+    }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 pb-12">
       <div className="bg-white rounded-xl shadow-sm p-6">
-        <div className="flex justify-between items-center mb-2">
-          <h1 className="text-2xl font-bold text-gray-800">Event Surveys</h1>
-          <div className="flex items-center text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-            <BarChart3 size={16} className="mr-1" />
-            <span className="font-medium">1 Available</span>
-          </div>
-        </div>
-        <p className="text-gray-600">
-          Share your feedback to help improve future events
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">Event Surveys</h1>
+        <p className="text-gray-600 mb-6">
+          Your feedback helps us improve future events. Please complete the
+          available surveys below.
         </p>
-      </div>
 
-      {submitted ? (
-        <div className="bg-green-50 rounded-xl shadow-sm p-8 text-center">
-          <CheckCircle size={48} className="mx-auto text-green-500 mb-4" />
-          <h2 className="text-xl font-bold text-gray-800 mb-2">Thank You!</h2>
-          <p className="text-gray-600 mb-6">
-            Your survey responses have been submitted successfully.
-          </p>
+        {/* Filter tabs */}
+        <div className="flex border-b border-gray-200 mb-6">
           <button
-            onClick={() => setSubmitted(false)}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            onClick={() => setActiveFilter("all")}
+            className={`py-2 px-4 border-b-2 font-medium text-sm ${
+              activeFilter === "all"
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
           >
-            Back to Surveys
+            All Surveys
+          </button>
+          <button
+            onClick={() => setActiveFilter("active")}
+            className={`py-2 px-4 border-b-2 font-medium text-sm ${
+              activeFilter === "active"
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            Active
+          </button>
+          <button
+            onClick={() => setActiveFilter("completed")}
+            className={`py-2 px-4 border-b-2 font-medium text-sm ${
+              activeFilter === "completed"
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            Completed
+          </button>
+          <button
+            onClick={() => setActiveFilter("upcoming")}
+            className={`py-2 px-4 border-b-2 font-medium text-sm ${
+              activeFilter === "upcoming"
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            Upcoming
           </button>
         </div>
-      ) : (
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-1">
-            {survey.name}
-          </h2>
-          <p className="text-gray-600 mb-6">{survey.description}</p>
 
-          {error && (
-            <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 text-sm">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {survey.questions.map((question) => (
-              <div key={question.id} className="border-b border-gray-200 pb-6">
-                <h3 className="font-medium text-gray-800 mb-3 flex items-start">
-                  <span>{question.question}</span>
-                  {question.required && (
-                    <span className="text-red-500 ml-1">*</span>
-                  )}
-                </h3>
-
-                {question.questionType === "radio" && (
-                  <div className="space-y-3">
-                    {question.answers?.map((answer, index) => (
-                      <label key={index} className="flex items-center">
-                        <input
-                          type="radio"
-                          name={`question_${question.id}`}
-                          value={answer}
-                          checked={
-                            (responses[question.id] as string) === answer
-                          }
-                          onChange={() =>
-                            handleRadioChange(question.id, answer)
-                          }
-                          className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                        />
-                        <span className="ml-2 text-gray-700">{answer}</span>
-                      </label>
-                    ))}
+        {/* Survey cards */}
+        {filteredSurveys.length > 0 ? (
+          <div className="space-y-4">
+            {filteredSurveys.map((survey) => (
+              <div
+                key={survey.id}
+                className="border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0">
+                    {survey.status === "active" && (
+                      <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                        <FileText className="h-5 w-5 text-green-600" />
+                      </div>
+                    )}
+                    {survey.status === "completed" && (
+                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                        <CheckSquare className="h-5 w-5 text-blue-600" />
+                      </div>
+                    )}
+                    {survey.status === "upcoming" && (
+                      <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
+                        <Clock className="h-5 w-5 text-yellow-600" />
+                      </div>
+                    )}
                   </div>
-                )}
 
-                {question.questionType === "checkbox" && (
-                  <div className="space-y-3">
-                    {question.answers?.map((answer, index) => (
-                      <label key={index} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name={`question_${question.id}`}
-                          value={answer}
-                          checked={(
-                            (responses[question.id] as string[]) || []
-                          ).includes(answer)}
-                          onChange={() =>
-                            handleCheckboxChange(question.id, answer)
-                          }
-                          className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                        <span className="ml-2 text-gray-700">{answer}</span>
-                      </label>
-                    ))}
+                  <div className="flex-1">
+                    <h3 className="text-lg font-medium text-gray-900">
+                      {survey.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-2">
+                      {survey.description}
+                    </p>
+
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                      <span className="text-gray-500">
+                        {survey.questions.length} questions
+                      </span>
+                      {survey.deadline && (
+                        <span className="text-gray-500">
+                          Deadline: {survey.deadline}
+                        </span>
+                      )}
+                      <span
+                        className={`font-medium ${
+                          survey.status === "active"
+                            ? "text-green-600"
+                            : survey.status === "completed"
+                            ? "text-blue-600"
+                            : "text-yellow-600"
+                        }`}
+                      >
+                        {survey.status === "active" && "Active"}
+                        {survey.status === "completed" && "Completed"}
+                        {survey.status === "upcoming" && "Upcoming"}
+                      </span>
+                    </div>
                   </div>
-                )}
 
-                {question.questionType === "text" && (
-                  <textarea
-                    name={`question_${question.id}`}
-                    value={(responses[question.id] as string) || ""}
-                    onChange={(e) =>
-                      handleTextChange(question.id, e.target.value)
-                    }
-                    rows={4}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Your answer..."
-                  />
-                )}
+                  <div className="flex-shrink-0">
+                    {survey.status === "active" && (
+                      <button
+                        onClick={() => startSurvey(survey)}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                      >
+                        Start Survey
+                      </button>
+                    )}
+                    {survey.status === "completed" && (
+                      <span className="text-blue-600 text-sm font-medium">
+                        Thank you for your feedback
+                      </span>
+                    )}
+                    {survey.status === "upcoming" && (
+                      <span className="text-gray-500 text-sm">
+                        Available soon
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
             ))}
+          </div>
+        ) : (
+          <div className="text-center py-12 bg-gray-50 rounded-lg">
+            <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-1">
+              No surveys found
+            </h3>
+            <p className="text-gray-500">
+              There are no surveys in this category at the moment.
+            </p>
+          </div>
+        )}
 
-            <div className="flex justify-end pt-4">
+        {/* Survey benefits */}
+        <div className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-100">
+          <h3 className="text-lg font-semibold text-blue-700 mb-2 flex items-center">
+            <Info className="h-5 w-5 mr-2" />
+            Why Your Feedback Matters
+          </h3>
+          <p className="text-gray-700 mb-2">
+            Your responses help us improve future events by identifying what
+            worked well and what could be better. All feedback is anonymous and
+            confidential.
+          </p>
+          <p className="text-gray-700">
+            Complete at least 3 surveys to receive a certificate of
+            participation after the summit.
+          </p>
+        </div>
+      </div>
+
+      {/* Active Survey Modal */}
+      {activeSurvey && !showSuccess && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-auto">
+            <div className="border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+              <h2 className="text-xl font-bold">{activeSurvey.title}</h2>
               <button
-                type="submit"
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                onClick={closeSurvey}
+                className="text-gray-500 hover:text-gray-700"
               >
-                Submit Survey
+                <X className="h-5 w-5" />
               </button>
             </div>
-          </form>
+
+            <div className="p-6">
+              {/* Progress indicator */}
+              <div className="mb-6">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-gray-500">
+                    Question {currentStep + 1} of{" "}
+                    {activeSurvey.questions.length}
+                  </span>
+                  <span className="text-sm font-medium text-blue-600">
+                    {Math.round(
+                      ((currentStep + 1) / activeSurvey.questions.length) * 100
+                    )}
+                    %
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className="bg-blue-600 h-2 rounded-full"
+                    style={{
+                      width: `${
+                        ((currentStep + 1) / activeSurvey.questions.length) *
+                        100
+                      }%`,
+                    }}
+                  ></div>
+                </div>
+              </div>
+
+              {/* Current question */}
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 mb-1">
+                  {activeSurvey.questions[currentStep].question}
+                </h3>
+
+                {activeSurvey.questions[currentStep].isRequired && (
+                  <span className="text-red-500 text-sm">* Required</span>
+                )}
+
+                {renderQuestion(activeSurvey.questions[currentStep])}
+              </div>
+
+              {/* Navigation buttons */}
+              <div className="flex justify-between mt-8">
+                <button
+                  onClick={prevQuestion}
+                  disabled={currentStep === 0}
+                  className={`px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium
+                    ${
+                      currentStep === 0
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "text-gray-700 hover:bg-gray-50"
+                    }`}
+                >
+                  Previous
+                </button>
+
+                <button
+                  onClick={nextQuestion}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"
+                >
+                  {currentStep < activeSurvey.questions.length - 1
+                    ? "Next"
+                    : "Submit"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Modal */}
+      {activeSurvey && showSuccess && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-md w-full p-6 text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="h-8 w-8 text-green-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Thank You!
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Your feedback has been submitted successfully. We appreciate your
+              contribution to improving our events.
+            </p>
+            <button
+              onClick={closeSurvey}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"
+            >
+              Close
+            </button>
+          </div>
         </div>
       )}
     </div>

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import { toast } from "sonner";
 import { Check, Loader2 } from "lucide-react";
 
 interface TimetableItem {
@@ -25,7 +24,7 @@ interface TimetableProps {
   showDownloadLink?: boolean;
 }
 
-const Timetable: React.FC<TimetableProps> = ({
+const SimpleTimetable: React.FC<TimetableProps> = ({
   programmeUrl = "/events/FRS_Programme 25.03.25.pdf",
   items,
   showDownloadLink = true,
@@ -61,16 +60,17 @@ const Timetable: React.FC<TimetableProps> = ({
     );
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (selectedSessions.length === 0) {
-      toast.error("Please select at least one session to attend.");
+      setFeedback("Please select at least one session to attend.");
       return;
     }
 
     setIsSubmitting(true);
     setFeedback(null);
 
-    try {
+    // Simulate processing
+    setTimeout(() => {
       // Get selected session details
       const selectedSessionDetails = items
         .filter((item) => selectedSessions.includes(item.id))
@@ -82,9 +82,6 @@ const Timetable: React.FC<TimetableProps> = ({
           session: item.session,
           location: item.location,
         }));
-
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Check for conflicts (sessions happening at the same time)
       const sessionsByDay: Record<string, any[]> = {};
@@ -117,26 +114,21 @@ const Timetable: React.FC<TimetableProps> = ({
       }
 
       if (conflicts.length > 0) {
-        toast.error("You have selected sessions with time conflicts.");
         setFeedback(
           "There are time conflicts in your selection. Please review and adjust."
         );
       } else {
-        // Success message
-        toast.success("Your selections have been submitted successfully!");
+        // Show success message
         setFeedback(
           "Thank you for registering! We've saved your session selections."
         );
 
-        // Log selected sessions to console
-        console.log("Registered for sessions:", selectedSessionDetails);
+        // Log selections to console
+        console.log("Selected sessions:", selectedSessionDetails);
       }
-    } catch (error) {
-      console.error("Error submitting sessions:", error);
-      toast.error("An unexpected error occurred. Please try again later.");
-    } finally {
+
       setIsSubmitting(false);
-    }
+    }, 1000);
   };
 
   return (
@@ -272,7 +264,13 @@ const Timetable: React.FC<TimetableProps> = ({
         </button>
 
         {feedback && (
-          <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-800">
+          <div
+            className={`p-3 border rounded-lg text-sm ${
+              feedback.includes("conflicts")
+                ? "bg-red-50 border-red-200 text-red-800"
+                : "bg-green-50 border-green-200 text-green-800"
+            }`}
+          >
             {feedback}
           </div>
         )}
@@ -297,4 +295,4 @@ const Timetable: React.FC<TimetableProps> = ({
   );
 };
 
-export default Timetable;
+export default SimpleTimetable;
