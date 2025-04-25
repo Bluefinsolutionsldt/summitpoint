@@ -1,23 +1,38 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
-import { CheckCircle2, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useState, Suspense } from "react";
+import { CheckCircle2, Loader2 } from "lucide-react";
+import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { Confetti } from "@/components/ui/confetti";
 
 function SuccessPageContent() {
   const searchParams = useSearchParams();
   const firstName = searchParams.get("name") || "Participant";
   const router = useRouter();
-  const [isNavigating, setIsNavigating] = useState(false);
+  const [countdown, setCountdown] = useState(6);
 
-  
+  useEffect(() => {
+    // Redirect after 6 seconds to allow confetti animation to show
+    const timer = setTimeout(() => {
+      router.push("/event");
+    }, 6000);
+
+    const countdownInterval = setInterval(() => {
+      setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(countdownInterval);
+    };
+  }, [router]);
 
   return (
-    <main className="min-h-screen bg-[#F6F6F5] flex flex-col items-center justify-center p-4">
+    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 flex flex-col items-center justify-center p-4">
+      <Confetti />
+
       <div className="w-full max-w-3xl mx-auto">
         {/* Header image */}
         <div className="mb-8 text-center">
@@ -31,60 +46,42 @@ function SuccessPageContent() {
           />
         </div>
 
-        <Card className="border border-gray-100 shadow-lg bg-white overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-4 px-6 flex items-center gap-3">
-            <CheckCircle2 className="h-6 w-6" />
-            <h1 className="text-xl font-bold">Registration Successful</h1>
+        <Card className="border-0 shadow-xl bg-white overflow-hidden transform transition-all animate-fade-in-up">
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-6 px-8 flex items-center gap-4">
+            <div className="p-2 bg-white bg-opacity-20 rounded-full">
+              <CheckCircle2 className="h-8 w-8" />
+            </div>
+            <h1 className="text-2xl font-bold">Registration Complete!</h1>
           </div>
 
-          <CardContent className="p-6 md:p-8">
-            <div className="bg-blue-50 p-6 rounded-lg border border-blue-100 mb-6">
-              <h2 className="text-lg font-bold text-blue-800 mb-4">
-                IWTZ Confirmation Message:
-              </h2>
-
-              <div className="space-y-4 text-gray-700">
-                <p className="font-medium">Dear {firstName},</p>
-
-                <p>
-                  Thank you for registering for Innovation Week Tanzania 2025 &
-                  the Future Ready Summit! We're excited to have you join us.
-                </p>
-
-                <p>
-                  We encourage you to visit the event registration page to
-                  browse other sessions and activities that may be of interest
-                  to you by clicking below:
-                </p>
-
-                <div className="flex flex-col items-center gap-2 mt-2">
-                  <Link
-                    href="/event"
-                    className="w-full bg-blue-600 hover:bg-blue-700"
-                  >
-                    {isNavigating ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Redirecting to event page...
-                      </>
-                    ) : (
-                      "Visit Event Page"
-                    )}
-                  </Link>
-                </div>
-
-                <p>Looking forward to seeing you at JNICC.</p>
+          <CardContent className="p-8">
+            <div className="text-center mb-8">
+              <div className="w-20 h-20 bg-green-100 rounded-full mx-auto flex items-center justify-center mb-4">
+                <CheckCircle2 className="h-10 w-10 text-green-600" />
               </div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                Thank You, {firstName}!
+              </h2>
+              <p className="text-gray-600">
+                Your registration for Innovation Week Tanzania 2025 & the Future
+                Ready Summit has been confirmed.
+              </p>
             </div>
 
-            <div className="flex justify-center pt-2">
-              <Button
-                asChild
-                variant="outline"
-                className="text-gray-600 hover:text-gray-800 border-gray-300 hover:bg-gray-50 font-normal"
-              >
-                <Link href="/register/iwtz">Return to Registration</Link>
-              </Button>
+            <div className="bg-blue-50 p-6 rounded-lg border border-blue-100 mb-6">
+              <div className="flex items-center justify-center mb-4">
+                <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-full shadow-sm">
+                  <Loader2 className="h-5 w-5 text-blue-600 animate-spin" />
+                  <span className="font-medium text-blue-800">
+                    Redirecting to event page in {countdown} seconds...
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-center text-gray-700">
+                You will be automatically redirected to browse all sessions and
+                activities.
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -109,13 +106,13 @@ function SuccessPageContent() {
   );
 }
 
-// Loading fallback for suspense
-function SuccessPageLoading() {
+// Create a loading fallback
+function SuccessPageFallback() {
   return (
-    <div className="min-h-screen bg-[#F6F6F5] flex flex-col items-center justify-center p-4">
-      <div className="text-center">
-        <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-600" />
-        <p className="text-gray-600">Loading registration confirmation...</p>
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 flex flex-col items-center justify-center p-4">
+      <div className="flex items-center justify-center">
+        <Loader2 className="h-8 w-8 text-blue-600 animate-spin mr-2" />
+        <p className="text-lg font-medium text-blue-800">Loading...</p>
       </div>
     </div>
   );
@@ -123,7 +120,7 @@ function SuccessPageLoading() {
 
 export default function SuccessPage() {
   return (
-    <Suspense fallback={<SuccessPageLoading />}>
+    <Suspense fallback={<SuccessPageFallback />}>
       <SuccessPageContent />
     </Suspense>
   );
