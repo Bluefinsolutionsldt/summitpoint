@@ -134,7 +134,7 @@ export default function RegistrationPage() {
               Join the Innovation Movement
             </h2>
             <p className="text-gray-600 text-sm text-justify mb-6">
-              n a spirit of collaboration and shared commitment to strengthening
+              In a spirit of collaboration and shared commitment to strengthening
               innovation and driving digital transformation, the United Nations
               Development Programme (UNDP) Tanzania through its FUNGUO
               Innovation Programme, which is funded by the European Union and

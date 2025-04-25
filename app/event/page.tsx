@@ -266,7 +266,7 @@ export default function EventPage() {
       {/* Event Description */}
       <div className="bg-white rounded-xl shadow-sm p-8">
         <h2 className="text-2xl font-semibold text-blue-700 mb-4">
-          About IWTz2025
+          About Future Ready Summit 2025
         </h2>
         <p className="text-gray-700 leading-relaxed text-justify">
           {eventData.description}
