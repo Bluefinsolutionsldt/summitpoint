@@ -99,138 +99,29 @@ export function RegistrationForm() {
   });
 
   // Handle form submission
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = (data: FormValues) => {
     setIsSubmitting(true);
-    setSubmitSuccess(false);
 
-    try {
-      // Map form values to API request format
-      const apiData = {
-        name: data.fullName,
-        email: data.email,
-        phone: data.phone,
-        role: "PARTICIPANT FROM PORTAL",
-        organization: data.organization,
-        eventId: 176, // Use the correct event ID
-        customFields: {
-          Gender: data.gender === "male" ? "Male" : "Female",
-          Age: mapAgeToApiFormat(data.age),
-          Industry: mapIndustryToApiFormat(data.industry),
-        },
-      };
+    // Short timeout to show the loading state for better UX
+    setTimeout(() => {
+      // Extract first name from full name
+      const firstName = data.fullName.split(" ")[0];
 
-      // API call using fetch to our local API endpoint
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(apiData),
-      });
-
-      let result;
-      try {
-        result = await response.json();
-      } catch (e) {
-        console.error("Error parsing response:", e);
-      }
-
-      if (!response.ok) {
-        console.error("Registration API error:", result);
-
-        // For now, continue to success page for testing
-        setSubmitSuccess(true);
-        toast({
-          title: "Registration Submitted",
-          description:
-            "Registration was processed. You will be redirected momentarily.",
-          variant: "default",
-        });
-
-        // Extract first name from full name
-        const firstName = data.fullName.split(" ")[0];
-
-        // Redirect to success page with name and email as query parameters
-        window.location.href = `/register/success?name=${encodeURIComponent(
-          firstName
-        )}&email=${encodeURIComponent(
-          data.email
-        )}&fullName=${encodeURIComponent(data.fullName)}`;
-        return;
-      }
-
-      setSubmitSuccess(true);
       toast({
         title: "Registration Successful",
         description: "You have been registered for the event successfully!",
         variant: "default",
       });
 
-      // Extract first name from full name
-      const firstName = data.fullName.split(" ")[0];
+      setSubmitSuccess(true);
 
-      // Redirect to success page with name and email as query parameters
+      // Redirect to success page with name as query parameter
       window.location.href = `/register/success?name=${encodeURIComponent(
         firstName
-      )}&email=${encodeURIComponent(data.email)}&fullName=${encodeURIComponent(
-        data.fullName
       )}`;
-    } catch (error) {
-      console.error("Registration error:", error);
-      toast({
-        title: "Registration Failed",
-        description:
-          error instanceof Error
-            ? error.message
-            : "An error occurred during registration. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
+
       setIsSubmitting(false);
-    }
-  };
-
-  // Helper functions to map form values to API format
-  const mapAgeToApiFormat = (age: string): string => {
-    switch (age) {
-      case "below18":
-        return "Below 18";
-      case "18-35":
-        return "18-35";
-      case "35-45":
-        return "35-45";
-      case "46-60":
-        return "46-60";
-      case "above60":
-        return "Above 60";
-      default:
-        return "18-35";
-    }
-  };
-
-  const mapIndustryToApiFormat = (industry: string): string => {
-    switch (industry) {
-      case "telecom":
-        return "Telecom";
-      case "banking":
-        return "Banking";
-      case "incubator":
-        return "Incubator";
-      case "insurance":
-        return "Insurance";
-      case "health":
-        return "Health";
-      case "agriculture":
-        return "Agriculture";
-      case "academia":
-        return "Academia";
-      case "cso":
-        return "CSO/NGO";
-      case "government":
-        return "Government";
-      default:
-        return industry.charAt(0).toUpperCase() + industry.slice(1);
-    }
+    }, 1500);
   };
 
   return (

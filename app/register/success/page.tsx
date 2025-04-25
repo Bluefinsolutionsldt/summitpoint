@@ -5,6 +5,7 @@ import { CheckCircle2, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Confetti } from "@/components/ui/confetti";
+import { Button } from "@/components/ui/button";
 import { use } from "react";
 
 type PageProps = {
@@ -42,35 +43,42 @@ export default function SuccessPage({ searchParams }: PageProps) {
           </div>
 
           <CardContent className="p-8">
-            <div className="text-center mb-8">
+            <div className="text-center mb-6">
               <div className="w-20 h-20 bg-green-100 rounded-full mx-auto flex items-center justify-center mb-4">
                 <CheckCircle2 className="h-10 w-10 text-green-600" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                Thank You, {firstName}!
-              </h2>
-              <p className="text-gray-600">
-                Your registration for Innovation Week Tanzania 2025 & the Future
-                Ready Summit has been confirmed.
-              </p>
             </div>
 
             <div className="bg-blue-50 p-6 rounded-lg border border-blue-100 mb-6">
-              <div className="flex items-center justify-center mb-4">
-                <Link
-                  href="/event"
-                  className="flex items-center gap-3 bg-white px-6 py-3 rounded-full shadow-sm hover:shadow-md transition-all hover:bg-blue-50"
-                >
-                  <span className="font-medium text-blue-800">
-                    Continue to Event Page
-                  </span>
-                  <ArrowRight className="h-5 w-5 text-blue-600" />
-                </Link>
+              <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
+                IWTZ Confirmation Message
+              </h2>
+
+              <div className="text-gray-700 space-y-4">
+                <p>Dear {firstName},</p>
+
+                <p>
+                  Thank you for registering for Innovation Week Tanzania 2025 &
+                  the Future Ready Summit! We're excited to have you join us.
+                </p>
+
+                <p>
+                  We encourage you to visit the event registration page to
+                  browse other sessions and activities that may be of interest
+                  to you by clicking the button below.
+                </p>
+
+                <p>Looking forward to seeing you at JNICC.</p>
               </div>
 
-              <p className="text-center text-gray-700">
-                Proceed to browse all sessions and activities.
-              </p>
+              <div className="mt-6 text-center">
+                <Link href="/event">
+                  <Button className="px-8 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md">
+                    <span>Browse Events</span>
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
             </div>
           </CardContent>
         </Card>
