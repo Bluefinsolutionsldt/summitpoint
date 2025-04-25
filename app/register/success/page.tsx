@@ -152,12 +152,10 @@ function SuccessPageContent() {
                       Visit Event Page
                     </Button>
                   </Link>
-
-                  
+                </div>
 
                 <p>Looking forward to seeing you at JNICC.</p>
               </div>
-            </div>
             </div>
 
             <div className="flex justify-center pt-2">
