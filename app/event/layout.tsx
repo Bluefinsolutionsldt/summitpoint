@@ -32,44 +32,6 @@ export default function EventLayout({ children }: EventLayoutProps) {
   const { user, isAuthenticated, loading } = useAuth();
   const [isClient, setIsClient] = useState(false);
 
-  useEffect(() => {
-    setIsClient(true);
-
-    // If not authenticated and finished loading, redirect to login
-    if (!loading && !isAuthenticated && typeof window !== "undefined") {
-      // Check for backup authentication in localStorage
-      const hasLocalAuth = localStorage.getItem("summit_point_auth") !== null;
-
-      if (!hasLocalAuth) {
-        router.push("/login");
-      }
-    }
-  }, [isAuthenticated, loading, router]);
-
-  // Don't render anything on server to avoid hydration issues
-  if (!isClient) {
-    return null;
-  }
-
-  // Loading state
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F6F6F5]">
-        <div className="text-center">
-          <div className="w-12 h-12 border-t-2 border-b-2 border-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-lg text-gray-700">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Function to determine if a nav item is active
-  const isActive = (path: string) => {
-    if (path === "" && pathname === "/event") {
-      return true;
-    }
-    return pathname === `/event${path}`;
-  };
 
   return (
     <div className="min-h-screen bg-[#F6F6F5] flex flex-col">
