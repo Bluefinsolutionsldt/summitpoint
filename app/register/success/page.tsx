@@ -153,22 +153,11 @@ function SuccessPageContent() {
                     </Button>
                   </Link>
 
-                  {/* Alternative direct link as fallback */}
-                  {isLoggingIn && (
-                    <p className="text-xs text-gray-500 mt-1">
-                      If you're not redirected automatically,
-                      <Link
-                        href="/event"
-                        className="text-blue-600 hover:underline ml-1"
-                      >
-                        click here
-                      </Link>
-                    </p>
-                  )}
-                </div>
+                  
 
                 <p>Looking forward to seeing you at JNICC.</p>
               </div>
+            </div>
             </div>
 
             <div className="flex justify-center pt-2">
