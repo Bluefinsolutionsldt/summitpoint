@@ -221,7 +221,7 @@ export default function DocumentsPage() {
               onClick={() => setActiveCategory(category.id)}
             >
               {category.icon}
-              <span className="font-medium text-sm sm:text-base mt-1 sm:mt-2">
+              <span className="font-medium text-sm sm:text-base mt-1 sm:mt-2 line-clamp-2 h-10">
                 {category.name}
               </span>
               <span className="text-xs text-gray-500 mt-1 hidden sm:inline">
@@ -254,10 +254,10 @@ export default function DocumentsPage() {
                         {document.fileType} • {document.fileSize}
                       </span>
                     </div>
-                    <h3 className="font-medium text-base sm:text-lg text-gray-900 truncate">
+                    <h3 className="font-medium text-base sm:text-lg text-gray-900 break-words line-clamp-2">
                       {document.title}
                     </h3>
-                    <p className="text-sm text-gray-600 mb-2">
+                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">
                       {document.description}
                     </p>
 

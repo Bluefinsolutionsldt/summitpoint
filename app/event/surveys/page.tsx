@@ -322,7 +322,7 @@ export default function SurveysPage() {
                 <button
                   key={rating}
                   onClick={() => handleAnswerChange(question.id, rating)}
-                  className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-medium transition-colors
+                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-base sm:text-lg font-medium transition-colors
                     ${
                       answers[question.id] === rating
                         ? "bg-blue-600 text-white"
@@ -417,18 +417,18 @@ export default function SurveysPage() {
 
   return (
     <div className="space-y-8 pb-12">
-      <div className="bg-white rounded-xl shadow-sm p-6">
+      <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-2">Event Surveys</h1>
         <p className="text-gray-600 mb-6">
           Your feedback helps us improve future events. Please complete the
           available surveys below.
         </p>
 
-        {/* Filter tabs */}
-        <div className="flex border-b border-gray-200 mb-6">
+        {/* Filter tabs - scrollable on mobile */}
+        <div className="flex overflow-x-auto pb-1 border-b border-gray-200 mb-6 no-scrollbar">
           <button
             onClick={() => setActiveFilter("all")}
-            className={`py-2 px-4 border-b-2 font-medium text-sm ${
+            className={`py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap ${
               activeFilter === "all"
                 ? "border-blue-500 text-blue-600"
                 : "border-transparent text-gray-500 hover:text-gray-700"
@@ -438,7 +438,7 @@ export default function SurveysPage() {
           </button>
           <button
             onClick={() => setActiveFilter("active")}
-            className={`py-2 px-4 border-b-2 font-medium text-sm ${
+            className={`py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap ${
               activeFilter === "active"
                 ? "border-blue-500 text-blue-600"
                 : "border-transparent text-gray-500 hover:text-gray-700"
@@ -448,7 +448,7 @@ export default function SurveysPage() {
           </button>
           <button
             onClick={() => setActiveFilter("completed")}
-            className={`py-2 px-4 border-b-2 font-medium text-sm ${
+            className={`py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap ${
               activeFilter === "completed"
                 ? "border-blue-500 text-blue-600"
                 : "border-transparent text-gray-500 hover:text-gray-700"
@@ -458,7 +458,7 @@ export default function SurveysPage() {
           </button>
           <button
             onClick={() => setActiveFilter("upcoming")}
-            className={`py-2 px-4 border-b-2 font-medium text-sm ${
+            className={`py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap ${
               activeFilter === "upcoming"
                 ? "border-blue-500 text-blue-600"
                 : "border-transparent text-gray-500 hover:text-gray-700"
@@ -476,7 +476,7 @@ export default function SurveysPage() {
                 key={survey.id}
                 className="border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors"
               >
-                <div className="flex items-start gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                   <div className="flex-shrink-0">
                     {survey.status === "active" && (
                       <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
@@ -528,22 +528,22 @@ export default function SurveysPage() {
                     </div>
                   </div>
 
-                  <div className="flex-shrink-0">
+                  <div className="flex-shrink-0 mt-4 sm:mt-0">
                     {survey.status === "active" && (
                       <button
                         onClick={() => startSurvey(survey)}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                        className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
                       >
                         Start Survey
                       </button>
                     )}
                     {survey.status === "completed" && (
-                      <span className="text-blue-600 text-sm font-medium">
+                      <span className="block text-blue-600 text-sm font-medium text-center sm:text-left">
                         Thank you for your feedback
                       </span>
                     )}
                     {survey.status === "upcoming" && (
-                      <span className="text-gray-500 text-sm">
+                      <span className="block text-gray-500 text-sm text-center sm:text-left">
                         Available soon
                       </span>
                     )}
@@ -567,8 +567,8 @@ export default function SurveysPage() {
         {/* Survey benefits */}
         <div className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-100">
           <h3 className="text-lg font-semibold text-blue-700 mb-2 flex items-center">
-            <Info className="h-5 w-5 mr-2" />
-            Why Your Feedback Matters
+            <Info className="h-5 w-5 mr-2 flex-shrink-0" />
+            <span>Why Your Feedback Matters</span>
           </h3>
           <p className="text-gray-700 mb-2">
             Your responses help us improve future events by identifying what
@@ -584,10 +584,12 @@ export default function SurveysPage() {
 
       {/* Active Survey Modal */}
       {activeSurvey && !showSuccess && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-auto">
-            <div className="border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-              <h2 className="text-xl font-bold">{activeSurvey.title}</h2>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-auto">
+            <div className="border-b border-gray-200 px-4 sm:px-6 py-4 flex justify-between items-center">
+              <h2 className="text-lg sm:text-xl font-bold">
+                {activeSurvey.title}
+              </h2>
               <button
                 onClick={closeSurvey}
                 className="text-gray-500 hover:text-gray-700"
@@ -596,7 +598,7 @@ export default function SurveysPage() {
               </button>
             </div>
 
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               {/* Progress indicator */}
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-2">
@@ -668,12 +670,12 @@ export default function SurveysPage() {
 
       {/* Success Modal */}
       {activeSurvey && showSuccess && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full p-6 text-center">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-white rounded-xl max-w-md w-full p-4 sm:p-6 text-center">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
               Thank You!
             </h2>
             <p className="text-gray-600 mb-6">
