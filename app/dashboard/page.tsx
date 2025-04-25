@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
-import EventCard from "@/components/EventCard";
+import EventCard from "@/components/ui/EventCard";
 import { fetchEvents } from "@/lib/api-util";
 
 // Event interface

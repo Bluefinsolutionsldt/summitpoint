@@ -1,170 +1,137 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
-import EventDetails from "@/components/EventDetails";
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { fetchEventById } from "@/lib/api-util";
+import EventDetails from "@/components/ui/EventDetails";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { format } from "date-fns";
 
-// Mock database of events - this would typically come from an API in a real application
-const eventsDatabase: Record<string, any> = {
-  "eapf-16": {
-    id: "eapf-16",
-    title: "16th EAST AFRICAN PROCUREMENT FORUM",
-    dateRange: "09 to 12 Sep 2024",
-    venue: "Arusha International Conference Centre",
-    logoSrc: "/ppra-logo.svg",
-    location: {
-      address: "Arusha International Conference Centre, Arusha, Tanzania",
-      coordinates: {
-        lat: -3.3695,
-        lng: 36.6942,
-      },
-    },
-    timetable: [
-      {
-        id: "day1-1",
-        day: "Day 1 - September 9",
-        time: "09:00 - 10:30",
-        title: "Opening Ceremony",
-        speaker: "H.E. Dr. Samia Suluhu Hassan",
-        description:
-          "Welcome address and official opening of the forum by the President of Tanzania",
-      },
-      {
-        id: "day1-2",
-        day: "Day 1 - September 9",
-        time: "11:00 - 12:30",
-        title: "Keynote: The Future of Public Procurement in East Africa",
-        speaker: "Dr. James Ndongo",
-        description:
-          "Overview of procurement challenges and opportunities in the region",
-      },
-      {
-        id: "day2-1",
-        day: "Day 2 - September 10",
-        time: "09:00 - 10:30",
-        title: "Panel Discussion: Digital Transformation in Procurement",
-        description: "Exploring e-procurement systems and digital tools",
-      },
-    ],
-    speakers: [
-      {
-        id: "speaker-1",
-        name: "Dr. Samia Suluhu Hassan",
-        title: "President",
-        organization: "United Republic of Tanzania",
-        bio: "H.E. Dr. Samia Suluhu Hassan is the President of Tanzania and will be the Guest of Honor at the event.",
-      },
-      {
-        id: "speaker-2",
-        name: "Dr. James Ndongo",
-        title: "Director General",
-        organization: "East African Procurement Authority",
-        bio: "Dr. Ndongo is an expert in public procurement with over 20 years of experience in the field.",
-      },
-      {
-        id: "speaker-3",
-        name: "Sarah Kimani",
-        title: "Chief Procurement Officer",
-        organization: "Ministry of Finance, Kenya",
-        bio: "Sarah has pioneered several procurement reforms in Kenya over the past decade.",
-      },
-    ],
-  },
-  "eapf-15": {
-    id: "eapf-15",
-    title: "15th EAST AFRICAN PROCUREMENT FORUM",
-    dateRange: "05 to 08 Sep 2023",
-    venue: "Kampala International Conference Centre",
-    logoSrc: "/ppra-logo.svg",
-    location: {
-      address: "Kampala International Conference Centre, Kampala, Uganda",
-      coordinates: {
-        lat: 0.3136,
-        lng: 32.5811,
-      },
-    },
-    timetable: [
-      {
-        id: "day1-1",
-        day: "Day 1 - September 5",
-        time: "09:00 - 10:30",
-        title: "Opening Ceremony",
-        speaker: "H.E. Yoweri Museveni",
-        description: "Welcome address by the President of Uganda",
-      },
-    ],
-    speakers: [
-      {
-        id: "speaker-1",
-        name: "H.E. Yoweri Museveni",
-        title: "President",
-        organization: "Republic of Uganda",
-        bio: "President of Uganda and Guest of Honor at the forum.",
-      },
-    ],
-  },
-  "eapf-14": {
-    id: "eapf-14",
-    title: "14th EAST AFRICAN PROCUREMENT FORUM",
-    dateRange: "10 to 13 Oct 2022",
-    venue: "Nairobi International Conference Centre",
-    logoSrc: "/ppra-logo.svg",
-    location: {
-      address: "Nairobi International Conference Centre, Nairobi, Kenya",
-      coordinates: {
-        lat: -1.2921,
-        lng: 36.8219,
-      },
-    },
-    timetable: [
-      {
-        id: "day1-1",
-        day: "Day 1 - October 10",
-        time: "09:00 - 10:30",
-        title: "Opening Ceremony",
-        speaker: "H.E. William Ruto",
-        description: "Welcome address by the President of Kenya",
-      },
-    ],
-    speakers: [
-      {
-        id: "speaker-1",
-        name: "H.E. William Ruto",
-        title: "President",
-        organization: "Republic of Kenya",
-        bio: "President of Kenya and Guest of Honor at the forum.",
-      },
-    ],
-  },
-};
-
-interface PageProps {
-  params: Promise<{
-    id: string;
-  }>;
+interface EventData {
+  id: number;
+  name: string;
+  startDate: string;
+  endDate: string;
+  description: string | null;
+  city: string;
+  venue: string;
+  latitude: number;
+  longitude: number;
+  bannerImage: string;
+  bannerThumbnail: string;
+  isPrivate: boolean;
+  signatureRequired: boolean;
+  accessCode: string | null;
+  themeColor: string;
+  organization: {
+    id: number;
+    name: string;
+    address: string | null;
+    phone: string | null;
+    logo: string | null;
+  };
 }
 
-export default function EventDetailPage({ params }: PageProps) {
-  // Use React.use() to unwrap the params Promise
-  const unwrappedParams = use(params);
-  const { id } = unwrappedParams;
+// Format dates for display
+const formatDateRange = (startDate: string, endDate: string) => {
+  try {
+    const start = format(new Date(startDate), "dd MMM yyyy");
+    const end = format(new Date(endDate), "dd MMM yyyy");
+    return `${start} to ${end}`;
+  } catch (error) {
+    return "Date unavailable";
+  }
+};
 
-  const [eventData, setEventData] = useState(eventsDatabase["eapf-16"]);
+export default function EventDetailPage() {
+  const params = useParams();
+  const id = params?.id;
+
+  const [eventData, setEventData] = useState<EventData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("Event ID from route params:", id);
+    async function loadEvent() {
+      if (!id) return;
 
-    if (id && id in eventsDatabase) {
-      console.log("Found event data for id:", id);
-      setEventData(eventsDatabase[id]);
-    } else {
-      console.log("Using default event data (eapf-16)");
-      setEventData(eventsDatabase["eapf-16"]);
+      try {
+        setLoading(true);
+        // Convert string ID to number if it's numeric
+        // Ensure id is treated as a string first
+        const idStr = Array.isArray(id) ? id[0] : String(id);
+        const numericId = !isNaN(Number(idStr)) ? Number(idStr) : idStr;
+        console.log("Fetching event with ID:", numericId);
+
+        const data = await fetchEventById(numericId);
+        if (data) {
+          console.log("Event data loaded successfully:", data.id);
+          setEventData(data);
+        } else {
+          setError("Event not found");
+        }
+      } catch (err) {
+        console.error("Failed to load event:", err);
+        setError("Failed to load event data");
+      } finally {
+        setLoading(false);
+      }
     }
+
+    loadEvent();
   }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (error || !eventData) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-4">
+        <h1 className="text-2xl font-bold text-red-600 mb-2">Error</h1>
+        <p className="text-gray-700 mb-4">{error || "Event not found"}</p>
+        <a
+          href="/dashboard"
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+        >
+          Return to Dashboard
+        </a>
+      </div>
+    );
+  }
+
+  // Transform API data to the format expected by EventDetails component
+  const formattedEvent = {
+    id: eventData.id.toString(),
+    title: eventData.name,
+    dateRange: formatDateRange(eventData.startDate, eventData.endDate),
+    venue: `${eventData.venue}, ${eventData.city}`,
+    logoSrc: eventData.organization?.logo || "/logo.svg",
+    description: eventData.description || "",
+    location: {
+      address: `${eventData.venue}, ${eventData.city}`,
+      coordinates: {
+        lat: eventData.latitude,
+        lng: eventData.longitude,
+      },
+    },
+    bannerImage: eventData.bannerImage?.startsWith("http")
+      ? eventData.bannerImage
+      : `https://cdn.summitpoint.co.tz/images/${eventData.bannerImage}`,
+    bannerThumbnail: eventData.bannerThumbnail?.startsWith("http")
+      ? eventData.bannerThumbnail
+      : `https://cdn.summitpoint.co.tz/images/${eventData.bannerThumbnail}`,
+    themeColor: eventData.themeColor,
+    organization: eventData.organization,
+  };
 
   return (
     <main className="min-h-screen bg-gray-100">
-      <EventDetails event={eventData} />
+      <EventDetails event={formattedEvent} />
     </main>
   );
 }

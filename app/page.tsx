@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SplashScreen from "@/components/SplashScreen";
-import EventDetailCard from "@/components/EventDetailCard";
 
 export default function Home() {
   const events = [
