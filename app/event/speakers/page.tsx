@@ -57,7 +57,7 @@ const speakersData = [
     title: "Resident Representative",
     organization: "UNDP Tanzania",
     bio: "Shigeki Komatsubara is the Resident Representative for UNDP Tanzania, leading development initiatives and partnerships to support sustainable development in the country.",
-    image: "/events/speakers/Shigeki Komatsubara.jpg",
+    image: "/events/speakers/ShigekiKomatsubara.jpg",
     category: "Workshop",
     social: {
       twitter: "ShigekiKomatsubara",

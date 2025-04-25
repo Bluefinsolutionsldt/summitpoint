@@ -22,7 +22,7 @@ const galleryImages = [
   },
   {
     id: 3,
-    src: "/events/speakers/Shigeki Komatsubara.jpg",
+    src: "/events/speakers/ShigekiKomatsubara.jpg",
     alt: "Shigeki Komatsubara",
     caption: "Speaker: Shigeki Komatsubara",
     category: "speakers",

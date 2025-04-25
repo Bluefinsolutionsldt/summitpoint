@@ -119,7 +119,7 @@ const sessions = [
     time: "10:00 - 11:30 EAT",
     speaker: "Shigeki Komatsubara",
     speakerTitle: "UNDP Representative",
-    image: "/events/speakers/Shigeki Komatsubara.jpg",
+    image: "/events/speakers/ShigekiKomatsubara.jpg",
     streamUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     isLive: false,
     isPast: false,

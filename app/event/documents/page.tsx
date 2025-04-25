@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import {
   FileText,
@@ -193,18 +194,18 @@ export default function DocumentsPage() {
         </div>
 
         {/* Categories */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 mb-8">
           <button
-            className={`p-3 border rounded-lg flex flex-col items-center text-center transition-colors ${
+            className={`p-2 sm:p-3 border rounded-lg flex flex-col items-center text-center transition-colors ${
               activeCategory === "all"
                 ? "bg-blue-50 border-blue-200"
                 : "border-gray-200 hover:bg-gray-50"
             }`}
             onClick={() => setActiveCategory("all")}
           >
-            <Users className="h-5 w-5 text-gray-500 mb-2" />
-            <span className="font-medium">All Documents</span>
-            <span className="text-xs text-gray-500 mt-1">
+            <Users className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500 mb-1 sm:mb-2" />
+            <span className="font-medium text-sm sm:text-base">All</span>
+            <span className="text-xs text-gray-500 mt-1 hidden sm:inline">
               {documents.length} files
             </span>
           </button>
@@ -212,7 +213,7 @@ export default function DocumentsPage() {
           {documentCategories.map((category) => (
             <button
               key={category.id}
-              className={`p-3 border rounded-lg flex flex-col items-center text-center transition-colors ${
+              className={`p-2 sm:p-3 border rounded-lg flex flex-col items-center text-center transition-colors ${
                 activeCategory === category.id
                   ? "bg-blue-50 border-blue-200"
                   : "border-gray-200 hover:bg-gray-50"
@@ -220,8 +221,10 @@ export default function DocumentsPage() {
               onClick={() => setActiveCategory(category.id)}
             >
               {category.icon}
-              <span className="font-medium mt-2">{category.name}</span>
-              <span className="text-xs text-gray-500 mt-1">
+              <span className="font-medium text-sm sm:text-base mt-1 sm:mt-2">
+                {category.name}
+              </span>
+              <span className="text-xs text-gray-500 mt-1 hidden sm:inline">
                 {documents.filter((doc) => doc.category === category.id).length}{" "}
                 files
               </span>
@@ -235,18 +238,30 @@ export default function DocumentsPage() {
             filteredDocuments.map((document) => (
               <div
                 key={document.id}
-                className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:bg-gray-50 transition-colors"
               >
-                <div className="flex items-start gap-4">
-                  {getDocumentIcon(document.fileType)}
+                <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+                  <div className="hidden sm:block">
+                    {getDocumentIcon(document.fileType)}
+                  </div>
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-lg text-gray-900 truncate">
+                    <div className="flex items-center gap-2 sm:hidden mb-1">
+                      {React.cloneElement(getDocumentIcon(document.fileType), {
+                        className: "h-5 w-5",
+                      })}
+                      <span className="text-sm font-medium">
+                        {document.fileType} • {document.fileSize}
+                      </span>
+                    </div>
+                    <h3 className="font-medium text-base sm:text-lg text-gray-900 truncate">
                       {document.title}
                     </h3>
-                    <p className="text-gray-600 mb-2">{document.description}</p>
+                    <p className="text-sm text-gray-600 mb-2">
+                      {document.description}
+                    </p>
 
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500 mt-1">
+                    <div className="hidden sm:flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500 mt-1 mb-3 sm:mb-0">
                       <span className="inline-flex items-center">
                         <File className="h-4 w-4 mr-1" />
                         {document.fileType}
@@ -261,9 +276,27 @@ export default function DocumentsPage() {
                         }
                       </span>
                     </div>
+
+                    <div className="flex gap-2 sm:hidden mt-2">
+                      <a
+                        href={document.path}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center flex-1 justify-center px-3 py-1.5 border border-transparent text-sm font-medium rounded text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors"
+                      >
+                        <ExternalLink className="h-4 w-4 mr-1" /> View
+                      </a>
+                      <a
+                        href={document.path}
+                        download
+                        className="inline-flex items-center flex-1 justify-center px-3 py-1.5 border border-transparent text-sm font-medium rounded text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+                      >
+                        <Download className="h-4 w-4 mr-1" /> Download
+                      </a>
+                    </div>
                   </div>
 
-                  <div className="flex-shrink-0">
+                  <div className="flex-shrink-0 hidden sm:block">
                     <div className="flex gap-2">
                       <a
                         href={document.path}
@@ -286,12 +319,12 @@ export default function DocumentsPage() {
               </div>
             ))
           ) : (
-            <div className="text-center py-12 bg-gray-50 rounded-lg">
-              <FileDown className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-1">
+            <div className="text-center py-8 sm:py-12 bg-gray-50 rounded-lg">
+              <FileDown className="h-8 w-8 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
+              <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-1">
                 No documents found
               </h3>
-              <p className="text-gray-500">
+              <p className="text-sm sm:text-base text-gray-500">
                 {searchQuery
                   ? `No results for "${searchQuery}". Try a different search term.`
                   : "There are no documents in this category."}
@@ -301,17 +334,17 @@ export default function DocumentsPage() {
         </div>
 
         {/* Guidelines for submitting documents */}
-        <div className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-100">
-          <h3 className="text-lg font-semibold text-blue-700 mb-2">
+        <div className="mt-8 p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-100">
+          <h3 className="text-base sm:text-lg font-semibold text-blue-700 mb-2">
             Need to submit a document?
           </h3>
-          <p className="text-gray-700 mb-2">
+          <p className="text-sm sm:text-base text-gray-700 mb-2">
             If you're a speaker or presenter and need to submit materials for
             the event, please email your documents to:
           </p>
           <a
             href="mailto:documents@frs2025.example.com"
-            className="text-blue-600 hover:text-blue-800 font-medium"
+            className="text-blue-600 hover:text-blue-800 font-medium break-all"
           >
             documents@frs2025.example.com
           </a>
