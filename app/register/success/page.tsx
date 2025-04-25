@@ -14,12 +14,7 @@ function SuccessPageContent() {
   const router = useRouter();
   const [isNavigating, setIsNavigating] = useState(false);
 
-  const handleOpenEvent = () => {
-    setIsNavigating(true);
-    setTimeout(() => {
-      router.push("/event");
-    }, 500);
-  };
+  
 
   return (
     <main className="min-h-screen bg-[#F6F6F5] flex flex-col items-center justify-center p-4">
@@ -63,10 +58,9 @@ function SuccessPageContent() {
                 </p>
 
                 <div className="flex flex-col items-center gap-2 mt-2">
-                  <Button
-                    onClick={handleOpenEvent}
+                  <Link
+                    href="/event"
                     className="w-full bg-blue-600 hover:bg-blue-700"
-                    disabled={isNavigating}
                   >
                     {isNavigating ? (
                       <>
@@ -76,7 +70,7 @@ function SuccessPageContent() {
                     ) : (
                       "Visit Event Page"
                     )}
-                  </Button>
+                  </Link>
                 </div>
 
                 <p>Looking forward to seeing you at JNICC.</p>
