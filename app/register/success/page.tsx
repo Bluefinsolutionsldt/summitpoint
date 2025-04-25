@@ -6,103 +6,19 @@ import Link from "next/link";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect, Suspense } from "react";
-import { useToast } from "@/components/ui/use-toast";
-import { useAuth } from "@/lib/AuthContext";
-import { authAPI, setAuthToken } from "@/lib/api";
+import { useState, Suspense } from "react";
 
 function SuccessPageContent() {
   const searchParams = useSearchParams();
   const firstName = searchParams.get("name") || "Participant";
-  const email = searchParams.get("email") || "";
-  const fullName = searchParams.get("fullName") || firstName;
   const router = useRouter();
+  const [isNavigating, setIsNavigating] = useState(false);
 
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [statusMessage, setStatusMessage] = useState("");
-  const { toast } = useToast();
-  const { login } = useAuth();
-
-  // When leaving the page, clear any loading state
-  useEffect(() => {
-    return () => {
-      setIsLoggingIn(false);
-    };
-  }, []);
-
-  const handleOpenEvent = async () => {
-    console.log("Open Event button clicked");
-
-    if (!email) {
-      console.log("No email found, showing error toast");
-      toast({
-        title: "Error",
-        description:
-          "Email is required for login. Please go back and register again.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    console.log(`Proceeding with login, email: ${email}, name: ${fullName}`);
-    setIsLoggingIn(true);
-    setStatusMessage("Authenticating...");
-
-    try {
-      // Try the direct API authentication first
-      console.log("Getting token directly from API");
-      try {
-        const token = await authAPI.createToken(fullName, email);
-        console.log("Token obtained directly:", token ? "Success" : "Failed");
-
-        if (token) {
-          // Set the token
-          setAuthToken(token);
-          setStatusMessage("Authentication successful! Redirecting...");
-
-          // Store user info in localStorage manually as backup
-          if (typeof window !== "undefined") {
-            localStorage.setItem(
-              "summit_point_auth",
-              JSON.stringify({
-                user: { name: fullName, email },
-                timestamp: Date.now(),
-              })
-            );
-          }
-
-          // Wait a moment before redirecting
-          await new Promise((resolve) => setTimeout(resolve, 500));
-
-          // Navigate directly to the event page
-          console.log("Navigating to event page");
-          router.push("/event");
-          return;
-        }
-      } catch (directApiError) {
-        console.error("Direct API token creation failed:", directApiError);
-        setStatusMessage(
-          "Direct authentication failed, trying alternative method..."
-        );
-      }
-
-      // If direct API call fails, try using the context login function
-      console.log("Calling context login function as fallback");
-      await login(fullName, email, "/event");
-      console.log("Login function completed successfully");
-
-      // The login function should handle the redirect
-    } catch (error) {
-      console.error("All login attempts failed:", error);
-      setStatusMessage("");
-      toast({
-        title: "Login Failed",
-        description:
-          "Could not automatically log you in. Please try again or contact support.",
-        variant: "destructive",
-      });
-      setIsLoggingIn(false);
-    }
+  const handleOpenEvent = () => {
+    setIsNavigating(true);
+    setTimeout(() => {
+      router.push("/event");
+    }, 500);
   };
 
   return (
@@ -147,11 +63,20 @@ function SuccessPageContent() {
                 </p>
 
                 <div className="flex flex-col items-center gap-2 mt-2">
-                  <Link href="/event" className="w-full">
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                      Visit Event Page
-                    </Button>
-                  </Link>
+                  <Button
+                    onClick={handleOpenEvent}
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    disabled={isNavigating}
+                  >
+                    {isNavigating ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Redirecting to event page...
+                      </>
+                    ) : (
+                      "Visit Event Page"
+                    )}
+                  </Button>
                 </div>
 
                 <p>Looking forward to seeing you at JNICC.</p>
