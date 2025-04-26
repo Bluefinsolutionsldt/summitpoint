@@ -498,7 +498,7 @@ export default function FeedbackPage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-800">
-              Feedback & Suggestions
+              Survey & Suggestions
             </h1>
             <p className="text-gray-600">
               Share your thoughts and help us improve the Summit experience
