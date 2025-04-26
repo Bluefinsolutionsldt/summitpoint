@@ -32,12 +32,12 @@ import { Button } from "@/components/ui/button";
 // Event data
 const eventData = {
   id: "frs-2025",
-  title: "Future Ready Summit 2025",
+  title: "Innovation Week Tanzania and Future Ready Summit 2025",
   subtitle: "Innovation for a Resilient and Inclusive Future",
   dateRange: "May 12-16, 2025",
   venue: "JNICC, Dar es Salaam",
   description:
-    "Innovation Week Tanzania is a dynamic platform that hosts a series of collaborative events and exhibitions, providing a space for innovators, entrepreneurs, policymakers, researchers, corporates, non-profits, and other key players in the innovation ecosystem. It serves as a hub for showcasing groundbreaking ideas, fostering cross-sector collaboration, addressing policy challenges and opportunities, and driving the scaling of innovation to transform Tanzania. Since its inception in 2015, Innovation Week Tanzania has become a flagship platform in the country’s innovation landscape, bringing together diverse stakeholders committed to accelerating innovation-driven economic and social development.The Future Ready Summit, Vodacom’s flagship event, brings together industry leaders and experts to share knowledge and insights that empower stakeholders to thrive in an increasingly technology-driven world. Launched in 2024, it quickly gained traction among digital innovation stakeholders. Now, as an anchor event of Innovation Week Tanzania, the Future Ready Summit strengthens the platform, making it even bigger, better, and more impactful.",
+    "Innovation Week Tanzania is a key annual event since 2015, bringing together a diverse range of stakeholders in Tanzania's innovation ecosystem. It serves as a central platform for showcasing new ideas, encouraging collaboration across sectors, tackling policy issues, and promoting the growth of innovations to drive economic and social progress in the country.More recently, Vodacom's Future Ready Summit, launched in 2024 as a leading forum for technology insights, has become a central part of Innovation Week Tanzania. This integration has strengthened the platform, making it larger and more effective in its mission to accelerate innovation-driven development within Tanzania.",
   coverImage: "/events/save.png",
   focusAreas: [
     {
@@ -266,7 +266,7 @@ export default function EventPage() {
       {/* Event Description */}
       <div className="bg-white rounded-xl shadow-sm p-8">
         <h2 className="text-2xl font-semibold text-blue-700 mb-4">
-          About Future Ready Summit 2025
+          About Innovation Week Tanzania and Future Ready Summit 2025
         </h2>
         <p className="text-gray-700 leading-relaxed text-justify">
           {eventData.description}
@@ -348,19 +348,12 @@ export default function EventPage() {
           <FeatureCard
             href="/event/feedback"
             icon={<BarChart3 className="h-8 w-8 text-blue-500" />}
-            title="Feedback & Suggestions"
+            title="Survey & Suggestions"
             description="Share your thoughts and ideas"
             bgColor="bg-blue-50"
           />
 
-          {/* Suggestions */}
-          {/* <FeatureCard
-            href="/event/suggestions"
-            icon={<MessageSquare className="h-8 w-8 text-blue-500" />}
-            title="Suggestions"
-            description="Share your ideas"
-            bgColor="bg-blue-50"
-          /> */}
+        
         </div>
       </div>
 

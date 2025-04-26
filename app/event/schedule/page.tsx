@@ -272,7 +272,7 @@ export default function SchedulePage() {
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div className="flex-1">
               <h1 className="text-3xl font-bold text-gray-800 mb-1">
-                Future Ready Summit 2025
+                Innovation Week Tanzania and Future Ready Summit 2025
               </h1>
               <p className="text-xl text-gray-600 font-light mb-4">
                 12th – 16th May | Tanzania
