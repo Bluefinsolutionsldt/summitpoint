@@ -37,7 +37,7 @@ const eventData = {
   dateRange: "May 12-16, 2025",
   venue: "JNICC, Dar es Salaam",
   description:
-    "Innovation Week Tanzania is a key annual event since 2015, bringing together a diverse range of stakeholders in Tanzania's innovation ecosystem. It serves as a central platform for showcasing new ideas, encouraging collaboration across sectors, tackling policy issues, and promoting the growth of innovations to drive economic and social progress in the country.More recently, Vodacom's Future Ready Summit, launched in 2024 as a leading forum for technology insights, has become a central part of Innovation Week Tanzania. This integration has strengthened the platform, making it larger and more effective in its mission to accelerate innovation-driven development within Tanzania.",
+    "Driven by a shared goal of advancing innovation, digital transformation, and inclusive growth, UNDP Tanzania through its FUNGUO Innovation Programme, Vodacom Tanzania, and the Tanzania Commission for Science and Technology (COSTECH) are proud to host Innovation Week Tanzania 2025 (IWTz2025).\nAnchored by Vodacom's Future Ready Summit, the 11th edition of Innovation Week Tanzania will take place from 12–16 May 2025 at the Julius Nyerere International Convention Centre in Dar es Salaam, with additional satellite activities across the country.\n This year's theme, \"Innovation for a Resilient and Inclusive Future,\" will focus on building smart, sustainable, and inclusive communities, creating opportunities for youth in the digital economy, and accelerating the commercialization of research and innovation.",
   coverImage: "/events/save.png",
   focusAreas: [
     {
@@ -268,9 +268,11 @@ export default function EventPage() {
         <h2 className="text-2xl font-semibold text-blue-700 mb-4">
           About Innovation Week Tanzania and Future Ready Summit 2025
         </h2>
-        <p className="text-gray-700 leading-relaxed text-justify">
-          {eventData.description}
-        </p>
+        <div className="text-gray-700 leading-relaxed text-justify space-y-4">
+          {eventData.description.split("\n").map((paragraph, index) => (
+            <p key={index}>{paragraph}</p>
+          ))}
+        </div>
       </div>
 
       {/* Event Features Section */}
@@ -352,8 +354,6 @@ export default function EventPage() {
             description="Share your thoughts and ideas"
             bgColor="bg-blue-50"
           />
-
-        
         </div>
       </div>
 
